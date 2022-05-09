@@ -1,11 +1,12 @@
 .data
-stirng: .ascii "ciao\0"
+string: .ascii "ciao\0"
 
 .text
 .global main
 
 main:
-    push string
+    leal string, %esi
+    push %esi
     call strlen
 
     movl $4, %eax
