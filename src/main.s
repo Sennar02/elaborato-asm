@@ -1,7 +1,13 @@
-.section .text
+.data
+stirng: .ascii "ciao\0"
+
+.text
 .global main
 
 main:
-    mov $1, %eax
-    mov $0, %ebx
+    push string
+    call strlen
+
+    movl $4, %eax
+    movl $1, %ebx
     int $0x80

@@ -1,3 +1,7 @@
+# Executable folder.
 bin/
+# Objects folder.
 obj/
-.*/
+
+# Every hidden folder or file.
+.*

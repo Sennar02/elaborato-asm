@@ -1,20 +1,20 @@
-CC = gcc
-CC_FLAGS = -m32 -g
+# cc := gcc
+# cflags := -m32 -g
 
-TARGET = bin/prog
-SOURCE = src/main.s
-OBJECT = $(patsubst src/%.s,obj/%.o,$(SOURCE))
+# trg := bin/program.out
+# src := $(shell ls src/*.s)
+# tmp := $(subst src/,obj/,$(src))
+# obj := $(subst .s,.o,$(tmp))
 
-all: $(TARGET)
+# all: $(trg)
 
-$(TARGET): $(OBJECT)
-	@mkdir -p bin
-	$(CC) $(CC_FLAGS) $^ -o $@
+# $(trg): $(obj)
+# 	@mkdir -p bin/
+# 	$(cc) $(cflags) $^ -o $@
 
-$(OBJECT): $(SOURCE)
-	@mkdir -p obj
-	$(CC) $(CC_FLAGS) -c $^ -o $@
+# obj/%.o: src/%.s
+# 	@mkdir -p obj/
+# 	$(cc) $(cflags) -c $< -o $@
 
-clean:
-	rm -rf $(OBJECT)
-	rm -rf $(TARGET)
+# clean:
+# 	rm -rf $(obj) $(trg)
