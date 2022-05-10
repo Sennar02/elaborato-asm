@@ -1,8 +1,8 @@
 #include <stdio.h>
-#include <malloc.h>
 #include "string.h"
+#include "array.h"
 
-const char* names[] = {
+const char *names[] = {
     "Pierre Gasly",
     "Charles Leclerc",
     "Max Verstappen",
@@ -26,65 +26,10 @@ const char* names[] = {
 };
 
 int
-find(const char* name)
+main(int argc, char **argv)
 {
-    int len1 = 0, len2 = 0;
+    int pos = array_search(names, 20, "Lewis Hamilton");
 
-    if (name) {
-        len1 = string_len(name);
-
-        for (int i = 0; i < 20; ++i) {
-            len2 = string_len(names[i]);
-
-            if (len1 == len2 && string_ncmp(name, names[i], len1) == 0) {
-                return i;
-            }
-        }
-    }
-
-    return -1;
-}
-
-int
-main(int argc, const char** argv)
-{
-    FILE *infile = fopen("input.txt", "r");
-    long  insize = 0;
-    char *string = 0;
-
-    if (infile != 0) {
-        fseek(infile, 0, SEEK_END);
-        insize = ftell(infile);
-        string = calloc(insize, sizeof(char));
-        fseek(infile, 0, SEEK_SET);
-
-        if (string != 0) {
-            fread(string, sizeof(char), insize, infile);
-            fclose(infile);
-        }
-    }
-
-    for (int i = 0; string != 0; i++) {
-        char *line = string_sep(&string, 10);
-
-        if (i == 0) {
-            fprintf(stdout, "Index: %u\n", find(line));
-        }
-
-        while (line != 0) {
-            char *item = string_sep(&line, ',');
-
-            if (item != 0)
-                fprintf(stdout, "[%s]", item);
-        }
-        fprintf(stdout, "\n");
-
-
-        if (line != 0) {
-            fprintf(stdout, "\"%s\"\n", line);
-        }
-    }
-    fprintf(stdout, "\n");
-
+    printf("%d\n", pos);
     return 0;
 }

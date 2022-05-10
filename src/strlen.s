@@ -1,30 +1,37 @@
 .text
-.global strlen
 
+/* Esportazione della funzione "strlen". */
+.global strlen
 .type strlen, @function
 
 strlen:
-    push %ebp
-    movl %esp, %ebp
+    strlen_prologue:
+        /* Salvataggio base ptr. */
+        push %ebp
+        movl %esp, %ebp
+        /* Salvataggio registri. */
+        push %ebx
 
-    push %ebx
-    movl -8(%ebp), %ebx     # Copia il puntatore a carattere in %ebx
-    decl %ebx
-    movl $0, %eax
+    movl 8(%ebp), %ebx      # Copia il puntatore a carattere.
+
+    subl $1, %ebx           # Decrementa il puntatore.
+    movl $0, %eax           # Azzera il risultato.
 
     strlen_loop:
-        incl %ebx
-        cmpl $0, %ebx           # Se il puntatore è uguale a NULL
-        je strlen_exit          # esce dal ciclo
-        cmpb $0, (%ebx)         # Se il valore puntato è uguale a '\0'
-        jne strlen_loop         # controlla il carattere successivo
+        addl $1, %ebx           # Incrementa il puntatore.
+        cmpl $0, %ebx           # Confronta il puntatore con NULL.
+        je strlen_diff          # Se è uguale esce dal ciclo.
+        cmpb $0, (%ebx)         # Confronta il puntato con '\0'.
+        jne strlen_loop         # Se è uguale esce dal ciclo.
 
-    incl %ebx
-	movl -8(%ebp), %eax     # Copia il puntatore a carattere in %eax
-    subl %eax, %ebx         # Sottrae %eax da %ebx
-	movl %ebx, %eax
+    strlen_diff:
+        movl 8(%ebp), %eax      # Copia il puntatore originale.
+        subl %eax, %ebx         # Calcola la differenza tra i due.
+        movl %ebx, %eax         # Salva la differenza nel risultato.
 
-    strlen_exit:
+    strlen_epilogue:
+        /* Ripristino dei registri. */
         pop %ebx
+        /* Ripristino del base ptr. */
         pop %ebp
-        ret         # Torna al chiamante
+        ret

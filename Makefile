@@ -1,5 +1,6 @@
 cc := gcc
-cflags := -m32 -g
+aflags := -m32 -g
+lflags := -m32 -no-pie
 
 trg := bin/program.out
 src := $(shell ls src/*.s)
@@ -10,11 +11,11 @@ all: $(trg)
 
 $(trg): $(obj)
 	@mkdir -p bin/
-	$(cc) $(cflags) $^ -o $@
+	$(cc) $(lflags) $^ -o $@
 
 obj/%.o: src/%.s
 	@mkdir -p obj/
-	$(cc) $(cflags) -c $< -o $@
+	$(cc) $(aflags) -c $< -o $@
 
 clean:
 	rm -rf $(obj) $(trg)

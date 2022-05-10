@@ -15,8 +15,7 @@ string_len(const char *str)
 int
 string_ncmp(const char *str1, const char *str2, int len)
 {
-    unsigned char chr1 = 0,
-                  chr2 = 0;
+    unsigned char chr1 = 0, chr2 = 0;
 
     while (len-- > 0) {
         chr1 = (unsigned char) *str1++;
@@ -32,22 +31,22 @@ string_ncmp(const char *str1, const char *str2, int len)
 char*
 string_sep(char **strp, char sep)
 {
-    char *chrp, *tokp;
+    char *chrp = 0, *begp = 0;
 
-    if (strp == 0 || *strp == 0)
-        return 0;
+    if (strp != 0 && *strp != 0) {
+        chrp = *strp;
+        begp = *strp;
 
-    chrp = tokp = *strp;
+        while (chrp != 0 && *chrp != 0 && *chrp != sep)
+            ++chrp;
 
-    for (; chrp != 0 && *chrp != 0; ++chrp)
-        if (*chrp == sep) break;
-
-    if (*chrp != 0) {
-        *chrp++ = 0;
-        *strp = chrp;
-    } else {
-        *strp = 0;
+        if (*chrp != 0) {
+            *chrp = 0;
+            *strp = ++chrp;
+        } else {
+            *strp = 0;
+        }
     }
 
-    return tokp;
+    return begp;
 }
