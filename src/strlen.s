@@ -4,27 +4,27 @@
 .type strlen, @function
 
 strlen:
-    push %ebp               # Salva il valore di %ebp
-    movl %esp, %ebp         # Copia %esp in %ebp
+    push %ebp
+    movl %esp, %ebp
 
-    push %ebx               # Salva il valore di %ebx
-
-    movl -8(%ebp), %ebx     # Copia due valori indietro rispetto a %ebp in %ebx
-    movl $0, %eax           # Azzera %eax
-    decl %ebx               # Decrementa %ebx
+    push %ebx
+    movl -8(%ebp), %ebx     # Copia il puntatore a carattere in %ebx
+    decl %ebx
+    movl $0, %eax
 
     strlen_loop:
-        incl %ebx               # Incrementa %ebx
-        cmpl $0, %ebx           # Confronta il puntatore con NULL
-        je strlen_exit          # Se equivale esce
-        cmpl $0, (%ebx)         # Confronta il valore con '\0'
-        jne strlen_loop         # Se non equivale riparte
+        incl %ebx
+        cmpl $0, %ebx           # Se il puntatore è uguale a NULL
+        je strlen_exit          # esce dal ciclo
+        cmpb $0, (%ebx)         # Se il valore puntato è uguale a '\0'
+        jne strlen_loop         # controlla il carattere successivo
 
-	movl -8(%ebp), %eax     # Copia il puntatore in %eax
-    subl %eax, %ebx         # Sottrae ad %ebx il valore di %eax
-	movl %ebx, %eax         # Sposta il risultato in %eax
+    incl %ebx
+	movl -8(%ebp), %eax     # Copia il puntatore a carattere in %eax
+    subl %eax, %ebx         # Sottrae %eax da %ebx
+	movl %ebx, %eax
 
     strlen_exit:
-        pop %ebx    # Riprende %ebx
-        pop %ebp    # Riprende %ebp
+        pop %ebx
+        pop %ebp
         ret         # Torna al chiamante

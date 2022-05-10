@@ -5,10 +5,10 @@ string: .ascii "ciao\0"
 .global main
 
 main:
-    leal string, %esi
-    push %esi
+    push string
     call strlen
 
-    movl $4, %eax
-    movl $1, %ebx
-    int $0x80
+    main_exit:
+        movl $1, %eax
+        movl $0, %ebx
+        int $0x80
