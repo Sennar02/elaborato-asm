@@ -14,28 +14,27 @@ strncmp:
         push %ecx
         push %edx
 
-    movl 8(%ebp), %ebx      # Copia i puntatori a carattere.
-    movl 12(%ebp), %edx
-    movl 16(%ebp), %ecx     # Copia il numero massimo di iterazioni.
-
     movl $0, %eax           # Azzera il risultato.
+    movl 8(%ebp), %ebx      # Puntatori a carattere.
+    movl 12(%ebp), %ecx
+    movl 16(%ebp), %edx     # Quantità massima di iterazioni.
 
     strncmp_loop:
-        cmpl $0, %ecx           # Confronta il contatore con 0.
-        jle strncmp_diff        # Se è minore o uguale esce dal ciclo.
-        subl $1, %ecx           # Decrementa il contatore.
+        cmpl $0, %edx           # Confronta il contatore con 0.
+        jle  strncmp_diff       # Se è minore o uguale a 0 esce dal ciclo.
+        decl %edx               # Decrementa il contatore.
         movb (%ebx), %al        # Copia il primo puntato.
         cmpb $0, %al            # Confronta il primo puntato con '\0'
-        je strncmp_diff         # Se è uguale calcola la differenza.
-        cmpb (%edx), %al        # Confronta il primo puntato con il secondo.
-        jne strncmp_diff        # Se sono diversi calcola la differenza.
-        addl $1, %ebx           # Incrementa i puntatori.
-        addl $1, %edx
+        je   strncmp_diff       # Se è uguale a '\0' calcola la differenza.
+        cmpb (%ecx), %al        # Confronta il primo puntato con il secondo.
+        jne  strncmp_diff       # Se sono diversi calcola la differenza.
+        incl %ebx               # Incrementa i puntatori.
+        incl %ecx
         jmp strncmp_loop
 
     strncmp_diff:
-        movb (%ebx), %al       # Copia il puntato.
-        subb (%edx), %al       # Sottrae il secondo al primo.
+        movb (%ebx), %al    # Copia il primo valore puntato.
+        subb (%ecx), %al    # Restituisce la sottrazione.
 
     strncmp_epilogue:
         /* Ripristino dei registri. */

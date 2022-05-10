@@ -28,8 +28,5 @@ const char *names[] = {
 int
 main(int argc, char **argv)
 {
-    int pos = array_search(names, 20, "Lewis Hamilton");
-
-    printf("%d\n", pos);
     return 0;
 }

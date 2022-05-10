@@ -12,22 +12,21 @@ strlen:
         /* Salvataggio registri. */
         push %ebx
 
-    movl 8(%ebp), %ebx      # Copia il puntatore a carattere.
-
-    subl $1, %ebx           # Decrementa il puntatore.
     movl $0, %eax           # Azzera il risultato.
+    movl 8(%ebp), %ebx      # Puntatore a carattere.
 
     strlen_loop:
-        addl $1, %ebx           # Incrementa il puntatore.
         cmpl $0, %ebx           # Confronta il puntatore con NULL.
-        je strlen_diff          # Se è uguale esce dal ciclo.
+        je   strlen_diff        # Se è uguale a NULL esce dal ciclo.
         cmpb $0, (%ebx)         # Confronta il puntato con '\0'.
-        jne strlen_loop         # Se è uguale esce dal ciclo.
+        je   strlen_diff        # Se è uguale a '\0' esce dal ciclo.
+        incl %ebx               # Incrementa il puntatore.
+        jmp  strlen_loop
 
     strlen_diff:
-        movl 8(%ebp), %eax      # Copia il puntatore originale.
-        subl %eax, %ebx         # Calcola la differenza tra i due.
-        movl %ebx, %eax         # Salva la differenza nel risultato.
+        movl 8(%ebp), %eax
+        subl %eax, %ebx         # Calcola la distanza tra i puntatori.
+        movl %ebx, %eax         # Restituisce la differenza.
 
     strlen_epilogue:
         /* Ripristino dei registri. */

@@ -1,13 +1,12 @@
 #include "string.h"
-#include <stdio.h>
 
 int
 string_len(const char *str)
 {
-    const char *chrp;
+    const char *end;
 
-    for (chrp = str; chrp != 0; ++chrp)
-        if (*chrp == 0) return chrp - str;
+    for (end = str; end != 0; ++end)
+        if (*end == 0) return end - str;
 
     return 0;
 }
@@ -31,22 +30,21 @@ string_ncmp(const char *str1, const char *str2, int len)
 char*
 string_sep(char **strp, char sep)
 {
-    char *chrp = 0, *begp = 0;
+    char *end = 0, *beg = 0;
 
     if (strp != 0 && *strp != 0) {
-        chrp = *strp;
-        begp = *strp;
+        beg = end = *strp;
 
-        while (chrp != 0 && *chrp != 0 && *chrp != sep)
-            ++chrp;
+        for (; end != 0 && *end != 0; ++end)
+            if (*end == sep) break;
 
-        if (*chrp != 0) {
-            *chrp = 0;
-            *strp = ++chrp;
+        if (*end != 0) {
+            *end++ = 0;
+            *strp = end;
         } else {
             *strp = 0;
         }
     }
 
-    return begp;
+    return beg;
 }
