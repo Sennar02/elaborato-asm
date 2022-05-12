@@ -10,27 +10,24 @@ strlen:
         push %ebp
         movl %esp, %ebp
         /* Salvataggio registri. */
-        push %ebx
+        push %esi
 
-    movl $0, %eax           # Azzera il risultato.
-    movl 8(%ebp), %ebx      # Puntatore a carattere.
+    movl 8(%ebp), %eax      # Copia il primo parametro.
+    movl 8(%ebp), %esi
 
     strlen_loop:
-        cmpl $0, %ebx           # Confronta il puntatore con NULL.
-        je   strlen_diff        # Se è uguale a NULL esce dal ciclo.
-        cmpb $0, (%ebx)         # Confronta il puntato con '\0'.
+        cmpb $0, (%esi)         # Confronta il carattere con '\0'.
         je   strlen_diff        # Se è uguale a '\0' esce dal ciclo.
-        incl %ebx               # Incrementa il puntatore.
+        incl %esi
         jmp  strlen_loop
 
     strlen_diff:
-        movl 8(%ebp), %eax
-        subl %eax, %ebx         # Calcola la distanza tra i puntatori.
-        movl %ebx, %eax         # Restituisce la differenza.
+        subl %eax, %esi         # Calcola la differenza tra i puntatori.
+        movl %esi, %eax         # Restituisce la differenza.
 
     strlen_epilogue:
-        /* Ripristino dei registri. */
-        pop %ebx
-        /* Ripristino del base ptr. */
+        /* Ripristino registri. */
+        pop %esi
+        /* Ripristino base ptr. */
         pop %ebp
         ret

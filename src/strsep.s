@@ -9,53 +9,43 @@ strsep:
         /* Salvataggio base ptr. */
         push %ebp
         movl %esp, %ebp
-        /* Allocazione variabili. */
-        subl $4, %esp
         /* Salvataggio registri. */
+        push %esi
+        push %edi
         push %ebx
         push %edx
 
-    movl 8(%ebp), %eax      # Puntatore a stringa.
-    movb 12(%ebp), %dl      # Carattere separatore.
+    movl 8(%ebp), %esi      # Copia il primo parametro.
+    movb 12(%ebp), %bl      # Copia il secondo parametro.
 
-    cmpl $0, %eax           # Confronta il puntatore con NULL.
-    je   strsep_epilogue    # Se è uguale a NULL esce dalla funzione.
-    cmpb $0, (%eax)         # Confronta il valore puntato con NULL.
-    je   strsep_epilogue    # Se è uguale a NULL esce dalla funzione.
-
-    movl (%eax), %ebx       # Copia l'indirizzo del primo carattere.
-    movl %ebx, -4(%ebp)     # Salva l'indirizzo del primo carattere.
+    movl (%esi), %edi       # Dereferenzia il puntatore.
+    movl %edi, %eax
 
     strsep_loop:
-        cmpl $0, %ebx           # Confronta il puntatore con NULL.
-        je   strsep_if          # Se è uguale a NULL esce dal ciclo.
-        cmpb $0, (%ebx)         # Confronta il valoure puntato con '\0'.
-        je   strsep_if          # Se è uguale a '\0' esce dal ciclo.
-        cmpb %dl, (%ebx)        # Confronta il puntato con il separatore.
-        je   strsep_if          # Se è uguale al separatore esce dal ciclo.
-        incl %ebx               # Incrementa il puntatore.
-        jmp strsep_loop
+        movb (%edi), %dl
 
-    strsep_if:
-        cmpb $0, (%ebx)         # Confronta il valore puntato con '\0'.
-        je   strsep_else        # Se è uguale a '\0' prende l'altro ramo.
-        movb $0, (%ebx)         # Termina la stringa con '\0'.
-        addl $1, %ebx           # Incrementa il puntatore.
-        movl %ebx, (%eax)       # Sostituisce l'indirizzo del primo carattere.
-        jmp  strsep_ret
+        test %dl, %dl           # Confronta il carattere con '\0'.
+        jz   strsep_else        # Se è uguale a '\0' esce dal ciclo.
+        cmpb %dl, %bl           # Confronta il carattere con il separatore.
+        je   strsep_repl        # Se è uguale al separatore esce dal ciclo.
+        incl %edi
+        jmp  strsep_loop
+
+    strsep_repl:
+        movb $0, (%edi)         # Termina la stringa con '\0'.
+        incl %edi
+        movl %edi, (%esi)       # Sostituisce l'indirizzo del primo carattere.
+        jmp  strsep_epilogue
 
     strsep_else:
-        movl $0, (%eax)         # Azzera il puntatore a stringa.
-
-    strsep_ret:
-        movl -4(%ebp), %eax     # Restituisce il vecchio puntatore.
+        movl $0, (%esi)         # Azzera il puntatore a stringa.
 
     strsep_epilogue:
-        /* Ripristino dei registri. */
+        /* Ripristino registri. */
         pop %edx
         pop %ebx
-        /* Deallocazione variabili. */
-        movl %ebp, %esp
-        /* Ripristino del base ptr. */
+        pop %edi
+        pop %esi
+        /* Ripristino base ptr. */
         pop %ebp
         ret

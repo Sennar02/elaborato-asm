@@ -23,4 +23,4 @@ obj/%.o: src/%.c
 	$(cc) $(aflags) -c $< -o $@
 
 clean:
-	rm -rf $(obj) $(trg)
+	rm -rf obj/*.o bin/*.out
