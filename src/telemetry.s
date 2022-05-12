@@ -1,5 +1,5 @@
 .data
-fmt: .ascii "%s\n\0"
+printfmt: .ascii "%s\n\0"
 
 pilot_00_str: .ascii "Pierre Gasly\0"
 pilot_01_str: .ascii "Charles Leclerc\0"
@@ -81,15 +81,22 @@ telemetry:
     leal pilot_00_str, %esi
     movl %esi, -80(%ebp)
 
-    movl %ebp, %ebx
-    subl $80, %ebx
-    leal pilot_12_str, %esi
+    movl %ebp, %esi
+    addl $8, %esi
 
+    push $10
     push %esi
+    call strsep
+    addl $8, %esp
+
+    movl %ebp, %esi
+    subl $80, %esi
+
+    push %eax
     push $20
-    push %ebx
-    call arrnfind
-    addl $16, %esp
+    push %esi
+    call arrfind
+    addl $12, %esp
 
     telemetry_epilogue:
         /* Ripristino registri. */
