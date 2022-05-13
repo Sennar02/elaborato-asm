@@ -13,7 +13,6 @@ strsep:
         push %esi
         push %edi
         push %ebx
-        push %edx
 
     movl 8(%ebp), %esi      # Copia il primo parametro.
     movb 12(%ebp), %bl      # Copia il secondo parametro.
@@ -42,7 +41,6 @@ strsep:
 
     strsep_epilogue:
         /* Ripristino registri. */
-        pop %edx
         pop %ebx
         pop %edi
         pop %esi

@@ -12,7 +12,6 @@ strncmp:
         /* Salvataggio registri. */
         push %esi
         push %edi
-        push %ecx
 
     movl 8(%ebp), %esi      # Copia il primo parametro.
     movl 12(%ebp), %edi     # Copia il secondo parametro.
@@ -40,7 +39,6 @@ strncmp:
 
     strncmp_epilogue:
         /* Ripristino registri. */
-        pop %ecx
         pop %edi
         pop %esi
         /* Ripristino base ptr. */
