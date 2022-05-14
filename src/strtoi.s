@@ -1,6 +1,3 @@
-.data
-base: .long 10
-
 .text
 
 /* Esportazione della funzione "strtoi". */
@@ -17,6 +14,7 @@ strtoi:
         push %ebx
 
     movl 8(%ebp), %esi
+    movl 12(%ebp), %edx
 
     xorl %eax, %eax
     xorl %edx, %edx
@@ -31,7 +29,7 @@ strtoi:
         cmpb $9, %bl
         jg   strtoi_epilogue
 
-        mull base
+        mull %edx
         addl %ebx, %eax
         incl %esi
         jmp  strtoi_loop

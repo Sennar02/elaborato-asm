@@ -1,23 +1,51 @@
-#include "functions.h"
-
 int
 strlen(const char *str)
 {
     const char *s = str;
+
     while (*s++ != 0);
 
     return s - str;
 }
 
 int
-strtoi(const char *str)
+strtoi(const char *str, int base)
 {
     int res = 0;
 
     while (*str >= 48 && *str <= 57)
-        res = res * 10 + *str++ - 48;
+        res = res * base + *str++ - 48;
 
     return res;
+}
+
+char *
+itostr(int num, char *str, int base)
+{
+    char *s = str;
+
+    if (num != 0) {
+        do {
+            *s++ = (num % base) + 48;
+        }  while (num /= base);
+    } else
+        *s++ = 48;
+
+    *s = 0;
+
+    strnrev(str, s - str - 1);
+    return str;
+}
+
+char *
+strnrev(char *str, int num)
+{
+    char *s = str, *d = str + num, c = 0;
+
+    for (; s < d; ++s, --d)
+        c = *s, *s = *d, *d = c;
+
+    return str;
 }
 
 int
@@ -92,10 +120,10 @@ strsep(char **strp, char sep)
 int
 arrfind(const char *arr[], int len, const char *key)
 {
-    int num = c_strlen(key) + 1;
+    int num = strlen(key) + 1;
 
-    for (int i = 0; i < len; i++) {
-        if (c_strncmp(key, arr[i], num) == 0)
+    for (int i = 0; i < len; ++i) {
+        if (strncmp(key, arr[i], num) == 0)
             return i;
     }
 
