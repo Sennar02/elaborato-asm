@@ -30,6 +30,7 @@ strncmp:
         jz   strncmp_diff       # Se è uguale a '\0' esce dal ciclo.
         cmpb %al, (%edi)        # Confronta il primo carattere con il secondo.
         jne  strncmp_diff       # Se sono diversi esce dal ciclo.
+        
         incl %esi
         incl %edi
         jmp  strncmp_loop

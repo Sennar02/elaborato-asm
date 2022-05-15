@@ -31,6 +31,7 @@ strncpy:
         movb (%esi), %al
         incl %esi
         movb %al, (%edi)
+
         incl %edi
 
         test %al, %al

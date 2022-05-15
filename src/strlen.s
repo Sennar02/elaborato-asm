@@ -12,12 +12,14 @@ strlen:
         /* Salvataggio registri. */
         push %esi
 
-    movl 8(%ebp), %eax      # Copia il primo parametro.
-    movl 8(%ebp), %esi
+    movl 8(%ebp), %esi      # Copia il primo parametro.
+
+    movl %esi, %eax
 
     strlen_loop:
         cmpb $0, (%esi)         # Confronta il carattere con '\0'.
         je   strlen_diff        # Se è uguale a '\0' esce dal ciclo.
+
         incl %esi
         jmp  strlen_loop
 

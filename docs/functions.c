@@ -3,9 +3,9 @@ strlen(const char *str)
 {
     const char *s = str;
 
-    while (*s++ != 0);
+    while (*s++ != 0) {}
 
-    return s - str;
+    return s - str - 1;
 }
 
 int
@@ -51,11 +51,10 @@ strnrev(char *str, int num)
 int
 strncmp(const char *str1, const char *str2, int num)
 {
-    unsigned char c1 = 0, c2 = 0;
+    char c1 = 0, c2 = 0;
 
     while (num-- > 0) {
-        c1 = (unsigned char) *str1++;
-        c2 = (unsigned char) *str2++;
+        c1 = *str1++, c2 = *str2++;
 
         if (c1 == 0 || c1 != c2)
             return c1 - c2;
@@ -101,20 +100,20 @@ strlcpy(const char *src, char *dst, int num)
 }
 
 char*
-strsep(char **strp, char sep)
+strsep(char **ptr, char sep)
 {
-    char *cur = *strp, *res = *strp;
+    char *s = *ptr, *d = *ptr;
 
-    while (*cur != 0 && *cur != sep)
-        ++cur;
+    while (*s != 0 && *s != sep)
+        ++s;
 
-    if (*cur != 0) {
-        *cur++ = 0;
-        *strp = cur;
+    if (*s != 0) {
+        *s++ = 0;
+        *ptr = s;
     } else
-        *strp = 0;
+        *ptr = 0;
 
-    return res;
+    return d;
 }
 
 int

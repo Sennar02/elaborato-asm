@@ -31,8 +31,9 @@ strlcpy:
         movb (%esi), %al
         incl %esi
         movb %al, (%edi)
-        incl %edi
 
+        incl %edi
+        
         test %al, %al
         jnz  strlcpy_loop
 

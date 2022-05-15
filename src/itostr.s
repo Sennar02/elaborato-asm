@@ -27,6 +27,7 @@ itostr:
         divl %ecx
         addl $48, %edx
         movb %dl, (%esi)
+        
         incl %esi
 
         test %eax, %eax

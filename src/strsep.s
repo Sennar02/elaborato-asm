@@ -27,6 +27,7 @@ strsep:
         jz   strsep_else        # Se è uguale a '\0' esce dal ciclo.
         cmpb %dl, %bl           # Confronta il carattere con il separatore.
         je   strsep_repl        # Se è uguale al separatore esce dal ciclo.
+        
         incl %edi
         jmp  strsep_loop
 
