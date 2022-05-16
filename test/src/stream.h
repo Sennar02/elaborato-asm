@@ -1,6 +1,8 @@
 #ifndef STREAM_H
 #define STREAM_H
 
+#include <stdio.h>
+
 typedef struct stream
 {
     long  size;
