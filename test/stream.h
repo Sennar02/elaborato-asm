@@ -27,4 +27,4 @@ stream_read(stream_t *stream);
 void
 stream_write(stream_t *stream);
 
-#endif
+#endif /* STREAM_H */

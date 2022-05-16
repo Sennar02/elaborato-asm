@@ -1,15 +1,17 @@
+#include "library.h"
+
 int
-strlen(const char *str)
+c_strlen(const char *str)
 {
     const char *s = str;
 
-    while (*s++ != 0) {}
+    while (*s++ != 0);
 
     return s - str - 1;
 }
 
 int
-strtoi(const char *str, int base)
+c_strtoi(const char *str, int base)
 {
     int res = 0;
 
@@ -20,7 +22,7 @@ strtoi(const char *str, int base)
 }
 
 char *
-itostr(int num, char *str, int base)
+c_itostr(unsigned int num, char *str, int base)
 {
     char *s = str;
 
@@ -33,12 +35,12 @@ itostr(int num, char *str, int base)
 
     *s = 0;
 
-    strnrev(str, s - str - 1);
+    c_strnrev(str, s - str - 1);
     return str;
 }
 
 char *
-strnrev(char *str, int num)
+c_strnrev(char *str, int num)
 {
     char *s = str, *d = str + num, c = 0;
 
@@ -49,58 +51,54 @@ strnrev(char *str, int num)
 }
 
 int
-strncmp(const char *str1, const char *str2, int num)
+c_strncmp(const char *str1, const char *str2, int num)
 {
     char c1 = 0, c2 = 0;
 
-    while (num-- > 0) {
+    do {
         c1 = *str1++, c2 = *str2++;
 
         if (c1 == 0 || c1 != c2)
             return c1 - c2;
-    }
+    } while (num-- > 0);
 
     return c1 - c2;
 }
 
-char *
-strncpy(const char *src, char *dst, int num)
+int
+c_strncpy(char *dst, const char *src, int num)
 {
     const char *s = src;
     char *d = dst;
 
-    if (num != 0) {
-        while (num-- != 0) {
-            if ((*d++ = *s++) == 0)
-                break;
-        }
+    while (num-- > 0) {
+        if ((*d++ = *s++) == 0)
+            break;
     }
 
-    return dst;
+    return d - dst;
 }
 
-char *
-strlcpy(const char *src, char *dst, int num)
+int
+c_strlcpy(char *dst, const char *src, int num)
 {
-    int n = num;
+    int cnt = num;
     const char *s = src;
     char *d = dst;
 
-    if (n != 0) {
-        while (--n != 0) {
-            if ((*d++ = *s++) == 0)
-                break;
-        }
+    while (--num > 0) {
+        if ((*d++ = *s++) == 0)
+            break;
     }
 
-    if (n == 0 && num != 0)
+    if (cnt > 0 && num == 0)
         *d = 0;
 
-    return dst;
+    return d - dst;
 }
 
 char*
-strsep(char **ptr, char sep)
+c_strsep(char **ptr, char sep)
 {
     char *s = *ptr, *d = *ptr;
 
@@ -117,12 +115,12 @@ strsep(char **ptr, char sep)
 }
 
 int
-arrfind(const char *arr[], int len, const char *key)
+c_arrfind(const char *arr[], int len, const char *key)
 {
-    int num = strlen(key) + 1;
+    int num = c_strlen(key);
 
     for (int i = 0; i < len; ++i) {
-        if (strncmp(key, arr[i], num) == 0)
+        if (c_strncmp(key, arr[i], num) == 0)
             return i;
     }
 

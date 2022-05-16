@@ -1,10 +1,10 @@
 .text
 
 /* Esportazione della funzione "strlcpy". */
-.global strlcpy
-.type strlcpy, @function
+.global mstrlcpy
+.type mstrlcpy, @function
 
-strlcpy:
+mstrlcpy:
     strlcpy_prologue:
         /* Salvataggio base ptr. */
         push %ebp
@@ -14,36 +14,34 @@ strlcpy:
         push %edi
         push %ebx
 
-    movl 8(%ebp), %esi
-    movl 12(%ebp), %edi
+    movl 8(%ebp), %edi
+    movl 12(%ebp), %esi
     movl 16(%ebp), %ebx
 
     movl %ebx, %edx
 
-    test %ebx, %ebx
-    jz   strlcpy_term
-
     strlcpy_loop:
         decl %ebx
-        test %ebx, %ebx
-        jz   strlcpy_term
+        cmpl $0, %ebx
+        jle  strlcpy_term
 
         movb (%esi), %al
         incl %esi
         movb %al, (%edi)
 
         incl %edi
-        
+
         test %al, %al
         jnz  strlcpy_loop
 
     strlcpy_term:
-        test %edx, %edx
-        jz   strlcpy_return
+        cmpl $0, %edx
+        jle  strlcpy_return
         movb $0, (%edi)
 
     strlcpy_return:
-        movl 12(%ebp), %eax
+        movl %edi, %eax
+        subl 8(%ebp), %eax
 
     strlcpy_epilogue:
         /* Ripristino registri. */

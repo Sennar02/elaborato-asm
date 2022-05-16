@@ -41,4 +41,4 @@ printsep(void);
 void
 print_str_arr(const char *str[], int dim);
 
-#endif
+#endif /* TEST_H */
