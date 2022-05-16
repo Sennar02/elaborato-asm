@@ -1,10 +1,10 @@
 .text
 
 /* Esportazione della funzione "strncmp". */
-.global strncmp
-.type strncmp, @function
+.global asm_strncmp
+.type asm_strncmp, @function
 
-strncmp:
+asm_strncmp:
     strncmp_prologue:
         /* Salvataggio base ptr. */
         push %ebp

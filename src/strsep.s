@@ -1,10 +1,10 @@
 .text
 
 /* Esportazione della funzione "strsep". */
-.global strsep
-.type strsep, @function
+.global asm_strsep
+.type asm_strsep, @function
 
-strsep:
+asm_strsep:
     strsep_prologue:
         /* Salvataggio base ptr. */
         push %ebp
@@ -27,7 +27,7 @@ strsep:
         jz   strsep_else        # Se è uguale a '\0' esce dal ciclo.
         cmpb %dl, %bl           # Confronta il carattere con il separatore.
         je   strsep_repl        # Se è uguale al separatore esce dal ciclo.
-        
+
         incl %edi
         jmp  strsep_loop
 

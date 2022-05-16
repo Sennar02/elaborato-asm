@@ -1,10 +1,10 @@
 .text
 
 /* Esportazione della funzione "strnrev". */
-.global strnrev
-.type strnrev, @function
+.global asm_strnrev
+.type asm_strnrev, @function
 
-strnrev:
+asm_strnrev:
     strnrev_prologue:
         /* Salvataggio base ptr. */
         push %ebp

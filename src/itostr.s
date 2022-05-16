@@ -1,10 +1,10 @@
 .text
 
 /* Esportazione della funzione "itostr". */
-.global itostr
-.type itostr, @function
+.global asm_itostr
+.type asm_itostr, @function
 
-itostr:
+asm_itostr:
     itostr_prologue:
         /* Salvataggio base ptr. */
         push %ebp
@@ -27,7 +27,7 @@ itostr:
         divl %ecx
         addl $48, %edx
         movb %dl, (%esi)
-        
+
         incl %esi
 
         test %eax, %eax
@@ -47,7 +47,7 @@ itostr:
 
     push %eax
     push %edi
-    call strnrev
+    call asm_strnrev
     addl $8, %esp
 
     itostr_epilogue:

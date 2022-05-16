@@ -24,3 +24,9 @@ obj/%.o: src/%.c
 
 clean:
 	rm -rf obj/*.o bin/*.out
+
+test:
+	cp src/*.s test/src
+	cd test/
+	make && clear
+	cd ..

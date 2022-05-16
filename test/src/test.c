@@ -11,11 +11,11 @@ t_strlen(const char *names[], int lenght)
     const char str_null[] = "";     // Stringa nulla
 
     // Calcolo della lunghezza stringa nulla
-    len_str_null = s_strlen(str_null);
+    len_str_null = asm_strlen(str_null);
 
     // Calcolo della lunghezza delle stringhe in names
     for (int i = 0; i < lenght; i++) {
-        len_names[i] = s_strlen(names[i]);
+        len_names[i] = asm_strlen(names[i]);
     }
 
     // Stampa lunghezza stringa nulla
@@ -43,7 +43,7 @@ t_strtoi(void)
 
     // Conversione da stringa a numero
     for (int i = 0; i < 8; i++) {
-        int res = s_strtoi(str[i], 10);
+        int res = asm_strtoi(str[i], 10);
         printf("'%s' -> '%i'\n", str[i], res);
     }
 }
@@ -61,7 +61,7 @@ t_itostr(void)
 
     // Conversione da intero a stringa
     for (int i = 0; i < 4; i++) {
-        printf("%i -> '%s'\n", num[i], s_itostr(num[i], str_num, 10));
+        printf("%i -> '%s'\n", num[i], asm_itostr(num[i], str_num, 10));
     }
 }
 
@@ -78,9 +78,9 @@ t_strnrev(void)
     };
 
     // Ribaltamento stringa
-    printf("'%s' -> '%s'\n", strB[0], s_strnrev(str1, 2));
-    printf("'%s' -> '%s'\n", strB[1], s_strnrev(str2, 1));
-    printf("'%s' -> '%s'\n", strB[2], s_strnrev(str3, 0));
+    printf("'%s' -> '%s'\n", strB[0], asm_strnrev(str1, 2));
+    printf("'%s' -> '%s'\n", strB[1], asm_strnrev(str2, 1));
+    printf("'%s' -> '%s'\n", strB[2], asm_strnrev(str3, 0));
 }
 
 void
@@ -96,8 +96,8 @@ t_strncmp(void)
     // Comparazione delle stringhe
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
-            int len = s_strlen(str[j]);
-            printf("'%s' == '%s' -> %i\n", str[i], str[j], s_strncmp(str[i], str[j], len));
+            int len = asm_strlen(str[j]);
+            printf("'%s' == '%s' -> %i\n", str[i], str[j], asm_strncmp(str[i], str[j], len));
         }
     }
 }
@@ -113,7 +113,7 @@ t_strncpy(void)
     printf("'%s' -> '%s'\n", src, dst);
 
     // Copia dei primi due caratteri della prima stringa
-    len = s_strncpy(dst, src, 2);
+    len = asm_strncpy(dst, src, 2);
 
     // Stampa delle due stringhe
     printf("'%s' -> '%s'\n\n", src, dst);
@@ -137,7 +137,7 @@ t_strlcpy(void)
     printf("'%s' -> '%s'\n", src, dst);
 
     // Copia dei primi due caratteri della prima stringa
-    len = s_strlcpy(dst, src, 2);
+    len = asm_strlcpy(dst, src, 2);
 
     // Stampa delle due stringhe
     printf("'%s' -> '%s'\n\n", src, dst);
@@ -154,18 +154,18 @@ void
 t_strsep(char *itext)
 {
     // Stampa dell'id pilota
-    printf("'%s'\n", s_strsep(&itext, '\n'));
+    printf("'%s'\n", asm_strsep(&itext, '\n'));
 
     // Stampa di tutti i primi 10 valori separati dalla virgola
     for (int i = 0; i < 5; i++) {
-        printf("'%s'\n", s_strsep(&itext, ','));
+        printf("'%s'\n", asm_strsep(&itext, ','));
     }
 }
 
 void
 t_arrfind(const char *names[], int lenght)
 {
-    int pos_str_err[4] = {-2};  // Array contenente gli indici
+    int poasm_str_err[4] = {-2};  // Array contenente gli indici
     const char *str[4] = {      // Array contenente le stringhe
         "",
         "Pippo",
@@ -179,8 +179,8 @@ t_arrfind(const char *names[], int lenght)
 
     // Calcolo della posizione
     for (int i = 0; i < 4; i++) {
-        pos_str_err[i] = s_arrfind(names, lenght , str[i]);
-        printf("'%s' -> %i\n", str[i], pos_str_err[i]);
+        poasm_str_err[i] = asm_arrfind(names, lenght , str[i]);
+        printf("'%s' -> %i\n", str[i], poasm_str_err[i]);
     }
 }
 
