@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "functions.h"
+#include "library.h"
 #include "test.h"
 
 void

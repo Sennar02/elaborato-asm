@@ -1,5 +1,5 @@
-#ifndef FUNCTIONS_H
-#define FUNCTIONS_H
+#ifndef LIBRARY_H
+#define LIBRARY_H
 
 int
 c_strlen(const char *str);
@@ -23,9 +23,9 @@ int
 c_strlcpy(char *dst, const char *src, int num);
 
 char*
-c_strsep(char **strp, char sep);
+c_strsep(char **ptr, char sep);
 
 int
 c_arrfind(const char *arr[], int len, const char *key);
 
-#endif
+#endif /* LIBRARY_H */

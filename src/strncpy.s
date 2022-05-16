@@ -1,10 +1,10 @@
 .text
 
 /* Esportazione della funzione "strncpy". */
-.global strncpy
-.type strncpy, @function
+.global mstrncpy
+.type mstrncpy, @function
 
-strncpy:
+mstrncpy:
     strncpy_prologue:
         /* Salvataggio base ptr. */
         push %ebp
@@ -14,18 +14,15 @@ strncpy:
         push %edi
         push %ebx
 
-    movl 8(%ebp), %esi
-    movl 12(%ebp), %edi
+    movl 8(%ebp), %edi
+    movl 12(%ebp), %esi
     movl 16(%ebp), %ebx
 
     movl %ebx, %edx
 
-    test %ebx, %ebx
-    jz   strncpy_return
-
     strncpy_loop:
-        test %ebx, %ebx
-        jz   strncpy_return
+        cmpl $0, %ebx
+        jle  strncpy_return
         decl %ebx
 
         movb (%esi), %al
@@ -38,7 +35,8 @@ strncpy:
         jnz  strncpy_loop
 
     strncpy_return:
-        movl 12(%ebp), %eax
+        movl %edi, %eax
+        subl 8(%ebp), %eax
 
     strncpy_epilogue:
         /* Ripristino registri. */
