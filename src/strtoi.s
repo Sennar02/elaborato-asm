@@ -1,10 +1,10 @@
 .text
 
 /* Esportazione della funzione "strtoi". */
-.global strtoi
-.type strtoi, @function
+.global asm_strtoi
+.type asm_strtoi, @function
 
-strtoi:
+asm_strtoi:
     strtoi_prologue:
         /* Salvataggio base ptr. */
         push %ebp

@@ -1,10 +1,10 @@
 .text
 
 /* Esportazione della funzione "strlcpy". */
-.global strlcpy
-.type strlcpy, @function
+.global asm_strlcpy
+.type asm_strlcpy, @function
 
-strlcpy:
+asm_strlcpy:
     strlcpy_prologue:
         /* Salvataggio base ptr. */
         push %ebp

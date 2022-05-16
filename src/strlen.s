@@ -1,10 +1,10 @@
 .text
 
 /* Esportazione della funzione "strlen". */
-.global strlen
-.type strlen, @function
+.global asm_strlen
+.type asm_strlen, @function
 
-strlen:
+asm_strlen:
     strlen_prologue:
         /* Salvataggio base ptr. */
         push %ebp

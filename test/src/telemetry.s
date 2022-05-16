@@ -86,7 +86,7 @@ telemetry:
 
     push $10
     push %esi
-    call strsep
+    call asm_strsep
     addl $8, %esp
 
     movl %ebp, %esi
@@ -95,7 +95,7 @@ telemetry:
     push %eax
     push $20
     push %esi
-    call arrfind
+    call asm_arrfind
     addl $12, %esp
 
     telemetry_epilogue:

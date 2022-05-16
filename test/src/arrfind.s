@@ -1,10 +1,10 @@
 .text
 
 /* Esportazione della funzione "arrfind". */
-.global arrfind
-.type arrfind, @function
+.global asm_arrfind
+.type asm_arrfind, @function
 
-arrfind:
+asm_arrfind:
     arrfind_prologue:
         /* Salvataggio base ptr. */
         push %ebp
@@ -30,7 +30,7 @@ arrfind:
         push %eax               # Carica i parametri nello stack.
         push (%esi)
         push 16(%ebp)
-        call strncmp            # Chiama la funzione strncmp.
+        call asm_strncmp        # Chiama la funzione strncmp.
         addl $12, %esp          # Scarica i parametri dallo stack.
 
         test %eax, %eax         # Confronta il risultato con 0.

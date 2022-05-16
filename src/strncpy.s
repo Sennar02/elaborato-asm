@@ -1,10 +1,10 @@
 .text
 
 /* Esportazione della funzione "strncpy". */
-.global strncpy
-.type strncpy, @function
+.global asm_strncpy
+.type asm_strncpy, @function
 
-strncpy:
+asm_strncpy:
     strncpy_prologue:
         /* Salvataggio base ptr. */
         push %ebp
