@@ -57,10 +57,7 @@ c_strncmp(const char *str1, const char *str2, int num)
 
     do {
         c1 = *str1++, c2 = *str2++;
-
-        if (c1 == 0 || c1 != c2)
-            return c1 - c2;
-    } while (num-- > 0);
+    } while (num-- > 0 && c1 != 0 && c1 == c2);
 
     return c1 - c2;
 }
