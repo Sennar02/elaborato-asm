@@ -56,3 +56,30 @@ main(int argc, const char *argv[])
 
     return 0;
 }
+
+// int
+// c_telemetry(char *istr, char *ostr)
+// {
+//     char *iline = asm_strsep(&istr, '\n');
+//     int pline, pilot = asm_arrfind(names, 20, iline);
+
+//     char *itoks[5] = {};
+
+//     if (pilot != -1) {
+//         while (istr != 0) {
+//             iline = asm_strsep(&istr, '\n');
+//             asm_strspl(itoks, 5, &iline, ',');
+
+//             pline = asm_strtoi(itoks[1], 10);
+
+//             if (pline == pilot) {
+//                 return asm_strlcpy(ostr, itoks[1], 2) == 1;
+//                 // Calcolare le soglie e stamparle...
+//                 // Calcolare valori max e media...
+//             }
+//         }
+
+//         // Stampare valori max e media...
+//     } else
+//         return asm_strlcpy(ostr, "Invalid", 8) == 7;
+// }

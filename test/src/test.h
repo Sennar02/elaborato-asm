@@ -29,6 +29,9 @@ void
 t_strsep(char *itext);
 
 void
+t_strnsep(char *itext);
+
+void
 t_arrfind(const char *names[], int lenght);
 
 // ----------------------------------------

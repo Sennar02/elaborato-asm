@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include "library.h"
 #include "library.asm.h"
 #include "test.h"
 
@@ -163,6 +164,28 @@ t_strsep(char *itext)
 }
 
 void
+t_strnsep(char *itext)
+{
+    int toks = 0;
+    char *strings[5] = {0};
+
+    asm_strsep(&itext, '\n');
+
+    while (itext != 0) {
+        char *iline = asm_strsep(&itext, '\n');
+
+        if (iline != 0 && *iline != 0) {
+            toks = asm_strnsep(strings, 5, &iline, ',');
+
+            printf("Token: %i\n\t", toks);
+            for (int i = 0; i < 5; ++i)
+                printf("[%8s],\t", strings[i]);
+            printf("\n");
+        }
+    }
+}
+
+void
 t_arrfind(const char *names[], int lenght)
 {
     int poasm_str_err[4] = {-2};  // Array contenente gli indici
@@ -227,7 +250,12 @@ testing(char *itext, char *otext, const char *names[], int lenght)
 
     // Test strsep
     printf("\nIn esecuzione strsep()!\n\n");
-    t_strsep(itext);
+    t_strsep(strdup(itext));
+    printsep();
+
+    // Test strlsep
+    printf("\nIn esecuzione strnsep()!\n\n");
+    t_strnsep(strdup(itext));
     printsep();
 
     // Test arrfind

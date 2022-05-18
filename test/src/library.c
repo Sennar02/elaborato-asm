@@ -99,16 +99,30 @@ c_strsep(char **ptr, char sep)
 {
     char *s = *ptr, *d = *ptr;
 
-    while (*s != 0 && *s != sep)
-        ++s;
+    if (s != 0) {
+        while (*s != 0 && *s != sep)
+            ++s;
 
-    if (*s != 0) {
-        *s++ = 0;
-        *ptr = s;
-    } else
-        *ptr = 0;
+        if (*s != 0) {
+            *s++ = 0;
+            *ptr = s;
+        } else
+            *ptr = 0;
+    }
 
     return d;
+}
+
+int
+c_strnsep(char *arr[], int len, char **ptr, char sep)
+{
+    int l = 0, c = 0;
+
+    while (l++ < len)
+        if ((*arr++ = c_strsep(ptr, sep)) != 0)
+            ++c;
+
+    return c;
 }
 
 int
