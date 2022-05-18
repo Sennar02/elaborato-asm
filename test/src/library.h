@@ -26,6 +26,9 @@ char*
 c_strsep(char **ptr, char sep);
 
 int
+c_strnsep(char *arr[], int len, char **ptr, char sep);
+
+int
 c_arrfind(const char *arr[], int len, const char *key);
 
 #endif /* LIBRARY_H */

@@ -20,6 +20,9 @@ asm_strsep:
     movl (%esi), %edi       # Dereferenzia il puntatore.
     movl %edi, %eax
 
+    test %edi, %edi
+    jz   strsep_epilogue
+
     strsep_loop:
         movb (%edi), %dl
 

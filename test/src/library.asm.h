@@ -26,6 +26,9 @@ extern char *
 asm_strsep(char **ptr, char sep);
 
 extern int
+asm_strnsep(char *arr[], int len, char **ptr, char sep);
+
+extern int
 asm_arrfind(const char *arr[], int len, const char *key);
 
 #endif /* LIBRARY_ASM_H */
