@@ -25,8 +25,6 @@ asm_arrfind:
         call strlen             # Chiama la funzione strlen.
         addl $4, %esp           # Scarica i parametri dallo stack.
 
-        incl %eax
-
         push %eax               # Carica i parametri nello stack.
         push (%esi)
         push 16(%ebp)
