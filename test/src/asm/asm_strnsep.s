@@ -35,6 +35,10 @@ asm_strnsep:
     xorl %edx, %edx
 
     strnsep_loop:
+        test %ecx, %ecx
+        jz   strnsep_return
+        decl %ecx
+
         push %edx               # Salva il valore di EDX.
 
         # Separa la stringa
@@ -53,9 +57,10 @@ asm_strnsep:
         incl %edx               # Incrementa l'indirizzo.
 
         strnsep_repeat:
-            loop strnsep_loop
+            jmp strnsep_loop
 
-    movl %edx, %eax
+    strnsep_return:
+        movl %edx, %eax
 
     strnsep_epilogue:
         /* Ripristino registri. */

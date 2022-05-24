@@ -1,5 +1,5 @@
-#ifndef LIBRARY_ASM_H
-#define LIBRARY_ASM_H
+#ifndef ASM_H
+#define ASM_H
 
 extern int
 asm_strlen(const char *str);
@@ -31,4 +31,4 @@ asm_strnsep(char *arr[], int len, char **ptr, char sep);
 extern int
 asm_arrfind(const char *arr[], int len, const char *key);
 
-#endif /* LIBRARY_ASM_H */
+#endif /* ASM_H */

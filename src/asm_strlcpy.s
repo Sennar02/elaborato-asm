@@ -33,13 +33,12 @@ asm_strlcpy:
 
     strlcpy_loop:
         decl %ebx               # Decrementa di 1 la lunghezza.
-        test %ebx, %ebx         # Confronta la lunghezza con 0.
+        cmpl $0, %ebx           # Confronta la lunghezza con 0.
         jle  strlcpy_term       # Se è uguale a 0 esce dal ciclo.
 
         movb (%esi), %al        # Copia il primo carattere della tringa sorgente in AL.
         incl %esi               # Incrementa il puntatore del carattere.
         movb %al, (%edi)        # Carica il carattere nella stringa di destinazione.
-
         incl %edi               # Incrementa il puntatore del carattere.
 
         test %al, %al           # Confronta il carattere con '\0'.
@@ -47,7 +46,7 @@ asm_strlcpy:
 
     strlcpy_term:
         cmpl $0, %edx           # Confronta la lunghezza con 0.
-        jle  strlcpy_return     # Se è maggiore di 0.
+        jle  strlcpy_return     # Se è maggiore di 0
         movb $0, (%edi)         # Termina la stringa.
 
     strlcpy_return:
