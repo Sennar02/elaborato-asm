@@ -41,13 +41,14 @@ asm_strncmp:
 
         test %ecx, %ecx         # Confronta la lunghezza con 0.
         jz   strncmp_diff       # Se è uguale a 0 esce dal ciclo.
+        decl %ecx
 
         test %al, %al           # Confronta il primo carattere con '\0'.
         jz   strncmp_diff       # Se è uguale a '\0' esce dal ciclo.
         cmpb %al, %bl           # Confronta il primo carattere con il secondo.
         jne  strncmp_diff       # Se sono diversi esce dal ciclo.
 
-        loop strncmp_loop
+        jmp strncmp_loop
 
     strncmp_diff:
         subl %ebx, %eax     # Restituisce la differenza tra i due caratteri puntati.
