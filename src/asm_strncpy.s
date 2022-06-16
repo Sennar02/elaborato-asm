@@ -40,7 +40,7 @@ asm_strncpy:
         jle  strncpy_return     # Se è uguale a 0 esce dal ciclo.
         decl %ebx               # Decrementa di 1 la lunghezza.
 
-        movb (%esi), %al        # Copia il primo carattere della tringa sorgente in AL.
+        movb (%esi), %al        # Copia l'n-esimo carattere della stringa sorgente in AL.
         incl %esi               # Incrementa il puntatore del carattere.
         movb %al, (%edi)        # Carica il carattere nella stringa di destinazione.
 
