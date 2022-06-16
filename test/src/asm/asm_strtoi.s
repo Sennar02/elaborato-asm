@@ -30,7 +30,7 @@ asm_strtoi:
     xorl %ebx, %ebx
 
     strtoi_loop:
-        movb (%esi), %bl        # Copia il primo carattere della stringa in BL.
+        movb (%esi), %bl        # Copia l'n-esimo carattere della stringa in BL.
         subb $48, %bl           # Sottrae 48 per convertilo da ASCII a numero.
 
         cmpb $0, %bl            # Confronta il valore con 0.

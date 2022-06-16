@@ -34,9 +34,9 @@ asm_strncmp:
     xorl %ebx, %ebx
 
     strncmp_loop:
-        movb (%esi), %al        # Copia il primo carattere della prima stringa in AL.
+        movb (%esi), %al        # Copia l'n-esimo carattere della prima stringa in AL.
         incl %esi               # Incrementa il puntatore del carattere.
-        movb (%edi), %bl        # Copia il primo carattere della seconda stringa in BL.
+        movb (%edi), %bl        # Copia l'n-esimo carattere della seconda stringa in BL.
         incl %edi               # Incrementa il puntatore del carattere.
 
         test %ecx, %ecx         # Confronta la lunghezza con 0.

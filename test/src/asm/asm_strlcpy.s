@@ -36,7 +36,7 @@ asm_strlcpy:
         cmpl $0, %ebx           # Confronta la lunghezza con 0.
         jle  strlcpy_term       # Se è uguale a 0 esce dal ciclo.
 
-        movb (%esi), %al        # Copia il primo carattere della tringa sorgente in AL.
+        movb (%esi), %al        # Copia l'n-esimo carattere della stringa sorgente in AL.
         incl %esi               # Incrementa il puntatore del carattere.
         movb %al, (%edi)        # Carica il carattere nella stringa di destinazione.
         incl %edi               # Incrementa il puntatore del carattere.

@@ -34,7 +34,7 @@ asm_strsep:
     jz   strsep_epilogue
 
     strsep_loop:
-        movb (%edi), %dl        # Copia il primo carattere della stringa in DL.
+        movb (%edi), %dl        # Copia l'n-esimo carattere della stringa in DL.
 
         test %dl, %dl           # Confronta il carattere con '\0'.
         jz   strsep_else        # Se è uguale a '\0' esce dal ciclo.
