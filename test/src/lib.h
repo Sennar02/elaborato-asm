@@ -137,3 +137,12 @@ c_arrfind(const char *arr[], int len, const char *key)
 
     return -1;
 }
+
+int
+c_select(int val, int arr[], int len)
+{
+    for (int i = 0; i < len; ++i)
+        if (val <= arr[i]) return i;
+
+    return len;
+}
