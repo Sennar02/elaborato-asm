@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "lib.h"
-#include "stream.h"
-#include "tests.h"
+#include "file.h"
+// #include "test.h"
 
 static const char *names[] = {
     "Pierre Gasly",
@@ -41,15 +41,6 @@ static int tresholds[] = {
 static const char *outputs[] = {
     "LOW", "MEDIUM", "HIGH"
 };
-
-int
-c_select(int val, int arr[], int len)
-{
-    for (int i = 0; i < len; ++i)
-        if (val <= arr[i]) return i;
-
-    return len;
-}
 
 int
 c_telemetry_line(const char *arr[], int len, char *dst)
@@ -129,29 +120,34 @@ c_telemetry(char *src, char *dst)
 int
 main(int argc, const char *argv[])
 {
-    stream_t istr = {-1}, ostr = {-1};
+    file_t *src = 0, *dst = 0;
 
     if (argc != 3) {
         fprintf(stderr, "\x1b[1m\x1b[31mE:\x1b[0m Attesi due parametri.\n");
         return -1;
     }
 
-    stream_open(&istr, argv[1], "r");
-    stream_open(&ostr, argv[2], "w");
+    src = file_create(argv[1], "r");
+    dst = file_create(argv[2], "w");
 
-    if (istr.file != 0 && ostr.file != 0) {
-        stream_read(&istr);
-        stream_prep(&ostr, istr.size);
+    if (src != 0 && dst != 0) {
+        char *str = (char*) file_read(src);
+        char *out = malloc( strlen(str) );
 
-        if (istr.body != 0 && ostr.body != 0) {
-            c_telemetry(istr.body, ostr.body);
+        printf("\x1b[33mSource\x1b[0m:\n\n%s\n", str);
 
-            stream_write(&ostr);
-            stream_close(&istr);
-            stream_close(&ostr);
+        if (str != 0 && out != 0) {
+            c_telemetry(str, out);
+
+            printf("\x1b[33mResult\x1b[0m:\n\n%s\n", out);
+            file_write(dst, out);
         }
     }
 
+    file_close(src);
+    file_close(dst);
+
+    free(src), free(dst);
     return 0;
 }
 
