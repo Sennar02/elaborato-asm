@@ -87,8 +87,7 @@ c_itostr(unsigned int num, char *str, int base)
     } else
         *s++ = 48;
 
-    if (num == 0 && n > 0)
-        *s = 0;
+    *s = 0;
 
     c_strnrev(str, s - str - 1);
     return str;
