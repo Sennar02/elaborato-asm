@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include "lib.h"
 #include "file.h"
-// #include "test.h"
 
 static const char *names[] = {
     "Pierre Gasly",
@@ -28,39 +27,29 @@ static const char *names[] = {
     "Valtteri Bottas"
 };
 
-// Definisce un array di soglie in ordine
-// rispetto alle colonne dell'input.
-static int tresholds[] = {
-    100,  250,   // velocità
+static int ths[] = {
     5000, 10000, // giri
     90,   110,   // temperatura
+    100,  250,   // velocità
 };
 
-// Definisce un array contenente tutti gli output
-// possibili dal più piccolo al più grande.
-static const char *outputs[] = {
+static char *outputs[] = {
     "LOW", "MEDIUM", "HIGH"
 };
 
 int
-c_telemetry_line(const char *arr[], int len, char *dst)
+c_telemetry_line(int arr[], char *dst)
 {
-    char *d = dst;
-    int val = 0, idx = 0, siz = 0;
+    char *d = dst, *out = 0;
+    int idx = 0, siz = 0;
 
-    // Per tutte e tre le colonne di cui deve stampare.
     for (int i = 0; i < 3; ++i) {
-        val = c_strtoi(arr[i + 2], 10);
-        // Trova l'indice della stringa da stampare.
-        idx = c_select(val, tresholds + i * 2, 2);
-        // Accede alla suddetta stringa.
-        const char *out = outputs[idx];
-        // Calcola la sua lunghezza.
+        idx = c_select(arr[i], ths + i * 2, 2);
+        out = outputs[idx];
         siz = c_strlen(out);
-        // Stampa la stringa in output.
         dst += c_strncpy(dst, out, siz);
 
-        if (i + 1 != 3)
+        if (i != 2)
             *dst++ = ',';
         else
             *dst++ = '\n';
@@ -69,52 +58,96 @@ c_telemetry_line(const char *arr[], int len, char *dst)
     return dst - d;
 }
 
+void
+c_telemetry_last(int arr[], char *src, char *dst)
+{
+    int siz = 0;
+
+    for (int i = 0; i < 4; ++i) {
+        c_itostr(arr[i], src, 10);
+
+        siz = c_strlen(src);
+        dst += c_strncpy(dst, src, siz);
+
+        if (i != 3)
+            *dst++ = ',';
+        else
+            *dst++ = '\n';
+    }
+}
+
+int
+c_max(int val, int max)
+{
+    if (val > max)
+        return val;
+    else
+        return max;
+}
+
+int
+c_sum(int val, int sum)
+{
+    return val + sum;
+}
+
+int
+c_mean(int sum, int cnt)
+{
+    return sum / cnt;
+}
+
+void
+c_telemetry_loop(int idx, char *src, char *dst)
+{
+    char *s = src, *lin = 0, *str[5] = {0};
+    int cnt = 0, pid = 0, val[4] = {0}, tst[4] = {0};
+
+    for (cnt = 0; src != 0;) {
+        lin = c_strsep(&src, '\n');
+
+        if (lin != 0)
+            c_strnsep(str, 5, &lin, ',');
+
+        if (str[1] != 0) {
+            pid = c_strtoi(str[1], 10);
+
+            if (pid == idx) {
+                val[0] = c_strtoi(str[3], 10);
+                val[1] = c_strtoi(str[4], 10);
+                val[2] = c_strtoi(str[2], 10);
+
+                dst += c_strncpy(dst, str[0], 7);
+                *dst++ = ',';
+
+                dst += c_telemetry_line(val, dst);
+
+                tst[0] = c_max(tst[0], val[0]);
+                tst[1] = c_max(tst[1], val[1]);
+                tst[2] = c_max(tst[2], val[2]);
+                tst[3] = c_sum(tst[3], val[2]);
+
+                cnt += 1;
+            }
+        }
+    }
+
+    tst[3] = c_mean(tst[3], cnt);
+    c_telemetry_last(tst, s, dst);
+}
+
 int
 c_telemetry(char *src, char *dst)
 {
-    // Ottiene un puntatore alla prima riga.
     char *lin = c_strsep(&src, '\n');
-    // Cerca all'interno dell'array se la prima
-    // riga corrisponde ad uno dei piloti.
-    int pilot = c_arrfind(names, 20, lin);
+    int idx = c_arrfind(names, 20, lin);
 
-    char *arr[5] = {0};
+    if (idx >= 0)
+        c_telemetry_loop(idx, src, dst);
+    else
+        c_strlcpy(dst, "Invalid", 8);
 
-    // Se la ricerca ha avuto successo.
-    if (pilot != -1) {
-        // Finché la stringa non è stata consumata
-        // interamente.
-        while (src != 0) {
-            // Ottiene un puntatore ad una nuova riga.
-            lin = c_strsep(&src, '\n');
-
-            // Se il puntatore è valido e la riga non è
-            // vuota.
-            if (lin != 0) {
-                // Separa la riga 5 token delimitati dalla virgola
-                // e li salva nell'array.
-                c_strnsep(arr, 5, &lin, ',');
-
-                if (arr[1] != 0) {
-                    // Converte il secondo elemento in un intero in base 10.
-                    int idx = c_strtoi(arr[1], 10);
-                    // Se il valore calcolato è lo stesso del pilota che
-                    // si vuole analizzare.
-                    if (idx == pilot) {
-                        // Calcola e stampa le soglie.
-                        dst += c_telemetry_line((const char **) arr, 5, dst);
-
-                        // Aggiorna i valori di max e media...
-                        // ??? telemetry_acc(...);
-                    }
-                }
-            }
-        }
-
-        // Stampa i valori max e media...
-        // ??? telemetry_end(...);
-    } else
-        return c_strlcpy(dst, "Invalid", 8) == 7;
+    return 0;
 }
 
 int
