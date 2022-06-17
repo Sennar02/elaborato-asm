@@ -2,10 +2,8 @@
  * @file asm_strncpy.s
  *
  * @brief Copia num caratteri da src a dst.
-          Se si passa un numero di caratteri minore della lunghezza
-          non viene aggiunto alcun carattere di terminazione.
-          Viceversa se num è maggiore alla lunghezza di src la stringa
-          dst viene terinata.
+          Se num è maggiore della lunghezza di src la stringa
+          dst viene terinata nel caso in cui anche src lo sia.
  *
  * @param dst Stringa di destinazione.
  * @param src Stringa sorgente.
