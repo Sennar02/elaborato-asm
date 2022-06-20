@@ -27,7 +27,7 @@ asm_mean:
 
     xorl %edx, %edx
 
-    mean_body:
+    mean_calc:
         divl %ebx           # Divide la somma per la lunghezza.
 
     mean_epilogue:

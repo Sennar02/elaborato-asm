@@ -41,7 +41,6 @@ asm_strncpy:
         movb (%esi), %al        # Copia l'n-esimo carattere della stringa sorgente in AL.
         incl %esi               # Incrementa il puntatore del carattere.
         movb %al, (%edi)        # Carica il carattere nella stringa di destinazione.
-
         incl %edi               # Incrementa il puntatore del carattere.
 
         test %al, %al           # Confronta il carattere con '\0'.

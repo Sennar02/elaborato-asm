@@ -33,7 +33,7 @@ asm_strlcpy:
 
     strlcpy_loop:
         decl %ebx               # Decrementa di 1 la lunghezza.
-        cmpl $0, %ebx           # Confronta la lunghezza con 0.
+        test %ebx, %ebx         # Confronta la lunghezza con 0.
         jle  strlcpy_term       # Se è uguale a 0 esce dal ciclo.
 
         movb (%esi), %al        # Copia l'n-esimo carattere della stringa sorgente in AL.
@@ -45,7 +45,7 @@ asm_strlcpy:
         jnz  strlcpy_loop       # Se non è uguale a '\0' la stringa non è terminata.
 
     strlcpy_term:
-        cmpl $0, %edx           # Confronta la lunghezza con 0.
+        test %edx, %edx         # Confronta la lunghezza con 0.
         jle  strlcpy_return     # Se è maggiore di 0
         movb $0, (%edi)         # Termina la stringa.
 

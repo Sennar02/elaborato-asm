@@ -23,32 +23,27 @@ asm_select:
         push %esi
         push %ebx
 
-    movl 8(%ebp), %ecx      # Copia il valore.
+    movl 8(%ebp), %eax      # Copia il valore.
     movl 12(%ebp), %esi     # Copia il puntatore dell'array.
-    movl 16(%ebp), %eax     # Copia la lunghezza dell'array.
+    movl 16(%ebp), %ecx     # Copia la lunghezza dell'array.
 
-    movl $4, %edx
-    mulb %dl                # Moltiplica la lunghezza per la dimensione di un intero.
-    movl %eax, %edx         # Sposta la lunghezza dell'array dentro EDX.
-
-    xorl %eax, %eax
+    incl %ecx
 
     select_loop:
-        movl (%esi, %eax), %ebx     # Prende l'n-esimo valore dell'array.
+        test %ecx, %ecx
+        jz   select_return
+        decl %ecx
 
-        cmpl %ebx, %ecx             # Compara il valore dell'array con il parametro passato.
-        jle select_return           # Se il parametro passato è minore salta fuori dal ciclo.
+        movl (%esi), %ebx           # Prende l'n-esimo valore dell'array.
+        addl $4, %esi
 
-        addl $4, %eax               # Aggiorna il contatore.
-
-        cmpl %edx, %eax             # Confronta il contatore con la lunghezza.
-        jl select_loop              # Se il contatore è minore continua a ciclare.
-
-        movl %edx, %eax             # Sposta la lunghezza nel registro di ritorno.
+        cmpl %ebx, %eax             # Compara il valore dell'array con il parametro passato.
+        jle  select_return           # Se il parametro passato è minore salta fuori dal ciclo.
+        jmp  select_loop
 
     select_return:
-        movl $4, %ebx
-        divb %bl                    # Divide il valore per la dimensione di un intero.
+        movl 16(%ebp), %eax             # Divide il valore per la dimensione di un intero.
+        subl %ecx, %eax
 
     select_epilogue:
         /* Ripristino registri. */
