@@ -5,10 +5,10 @@ extern int
 asm_strlen(const char *str);
 
 extern int
-asm_strtoi(const char *str, int base);
+asm_strtoi(const char *str);
 
 extern char *
-asm_itostr(unsigned num, char *str, int base);
+asm_itostr(unsigned num, char *str);
 
 extern char *
 asm_strnrev(char *str, int num);

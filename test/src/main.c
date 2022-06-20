@@ -189,8 +189,12 @@ main(int argc, const char *argv[])
     int fails[7] = {0};
 
     int res = test(fails, (test_t[]) {
+            test_strncpy,
+            test_strlcpy,
+            test_strtoi,
+            test_arrfind,
             test_select
-        }, 1);
+        }, 5);
 
     for (int i = 0; i < res; ++i)
         printf("E: %i\n", fails[i]);

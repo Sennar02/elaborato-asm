@@ -33,4 +33,7 @@ test_strtoi();
 uint8_t
 test_select();
 
+uint8_t
+test_arrfind();
+
 #endif /* TESTS_H */
