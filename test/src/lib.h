@@ -64,26 +64,26 @@ c_strlcpy(char *dst, const char *src, int num)
 }
 
 int
-c_strtoi(const char *str, int base)
+c_strtoi(const char *str)
 {
     int res = 0;
 
     while (*str >= 48 && *str <= 57)
-        res = res * base + *str++ - 48;
+        res = res * 10 + *str++ - 48;
 
     return res;
 }
 
-char *
-c_itostr(unsigned int num, char *str, int base)
+char*
+c_itostr(unsigned int num, char *str)
 {
     int n = num;
     char *s = str;
 
     if (num != 0) {
         do {
-            *s++ = (num % base) + 48;
-        }  while (num /= base);
+            *s++ = (num % 10) + 48;
+        }  while (num /= 10);
     } else
         *s++ = 48;
 

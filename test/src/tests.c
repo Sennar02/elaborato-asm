@@ -130,6 +130,23 @@ test_strnsep()
 }
 
 uint8_t
+test_strtoi()
+{
+    int res[] = {
+        asm_strtoi("10")        == 10,
+        asm_strtoi("2")         == 2,
+        asm_strtoi("100")       == 100,
+        asm_strtoi("4")         == 4,
+    };
+
+    for (uint8_t i = 0; i < 6; ++i)
+        if (res[i] == 0)
+            return 0;
+
+    return 1;
+}
+
+uint8_t
 test_select()
 {
     int arr[] = {
@@ -137,15 +154,37 @@ test_select()
     };
 
     int res[] = {
-        asm_select(5, arr, 3) == 0,
-        asm_select(15, arr, 3) == 1,
-        asm_select(100, arr, 3) == 1,
-        asm_select(999, arr, 3) == 2,
-        asm_select(1000, arr, 3) == 2,
-        asm_select(10001, arr, 3) == 3
+        asm_select(5, arr, 3)        == 0,
+        asm_select(15, arr, 3)       == 1,
+        asm_select(100, arr, 3)      == 1,
+        asm_select(999, arr, 3)      == 2,
+        asm_select(1000, arr, 3)     == 2,
+        asm_select(10001, arr, 3)    == 3
     };
 
     for (uint8_t i = 0; i < 6; ++i)
+        if (res[i] == 0)
+            return 0;
+
+    return 1;
+}
+
+uint8_t
+test_arrfind()
+{
+    const char *arr[] = {
+        "Primo", "Esempio",
+        "Ciao", "Array"
+    };
+
+    int res[] = {
+        asm_arrfind(arr, 4, "Primo")    == 0,
+        asm_arrfind(arr, 4, "Esempio")  == 1,
+        asm_arrfind(arr, 4, "Array")    == 3,
+        asm_arrfind(arr, 4, "A")        == -1
+    };
+
+    for (uint8_t i = 0; i < 4; ++i)
         if (res[i] == 0)
             return 0;
 
