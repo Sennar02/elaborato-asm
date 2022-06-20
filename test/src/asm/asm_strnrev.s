@@ -1,16 +1,16 @@
 /**
  * @file asm_strnrev.s
  *
- * @brief Ribalta una stringa di num caratteri.
+ * @brief Ribalta un certo numero di caratteri di una stringa.
  *
- * @param str Stringa.
+ * @param str Stringa su cui operare.
  * @param num Numero di caratteri da ribaltare.
- * @return Stringa ribaltata di num caratteri passati.
+ *
+ * @return Un puntatore alla stringa stessa.
  */
 
 .text
 
-/* Esportazione della funzione "asm_strnrev". */
 .global asm_strnrev
 .type asm_strnrev, @function
 
@@ -24,28 +24,25 @@ asm_strnrev:
         push %edi
         push %ebx
 
-    movl 8(%ebp), %esi      # Copia la stringa.
+    movl 8(%ebp), %esi      # Copia la stringa da ribaltare in %esi.
+    movl %esi, %edi         # ed in %edi.
 
-    movl %esi, %edi         # Copia la stringa in EDI.
-    addl 12(%ebp), %edi     # Somma alla stringa in EDI il numero di caratteri.
+    addl 12(%ebp), %edi     # Sposta il secondo puntatore di num caratteri.
 
     strnrev_loop:
-        cmpl %edi, %esi         # Confronta le due stringhe.
-        jge  strnrev_return     # Se la stringa in EDI è maggiore di quella
-                                # in ESI termina la funzione.
+        cmpl %edi, %esi         # Se i due puntatori si incrociano.
+        jge  strnrev_return     # allora esce dal ciclo.
 
-        # Scambia i caratteri
-        movb (%esi), %al        # Salva il carattere puntato da ESI in AL.
-        movb (%edi), %bl        # Salva il carattere puntato da EDI in BL.
-        movb %bl, (%esi)
-        movb %al, (%edi)
-
-        incl %esi               # Incrementa il puntatore del carattere di ESI.
-        decl %edi               # Decrementa il puntatore del carattere di EDI.
+        movb (%esi), %al        # Copia un carattere dall'inizio.
+        movb (%edi), %bl        # Copia un carattere dalla fine.
+        movb %bl, (%esi)        # Mette il carattere finale in testa.
+        incl %esi               # Incrementa il puntatore al carattere successivo.
+        movb %al, (%edi)        # Mette il carattere iniziale in coda.
+        decl %edi               # Decrementa il puntatore al carattere precedente.
         jmp  strnrev_loop
 
     strnrev_return:
-        movl 8(%ebp), %eax
+        movl 8(%ebp), %eax      # Restituisce il puntatore originale.
 
     strnrev_epilogue:
         /* Ripristino registri. */

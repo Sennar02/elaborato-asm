@@ -53,7 +53,7 @@ asm_strnsep:
         addl $4, %esi           # Incrementa l'indice dell'array.
 
         test %eax, %eax         # Confronta l'indirizzo con NULL.
-        jz   strnsep_repeat     # Se è diverso da NULL.
+        jnz  strnsep_repeat     # Se è diverso da NULL.
         incl %edx               # Incrementa l'indirizzo.
 
         strnsep_repeat:

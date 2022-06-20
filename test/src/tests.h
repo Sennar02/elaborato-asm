@@ -3,31 +3,34 @@
 
 #include "test.h"
 
-int
+uint8_t
 test_strlen();
 
-int
+uint8_t
 test_strncmp();
 
-int
+uint8_t
 test_strncpy();
 
-int
+uint8_t
 test_strlcpy();
 
-int
+uint8_t
 test_strnrev();
 
-int
+uint8_t
 test_strsep();
 
-int
+uint8_t
 test_strnsep();
 
-int
+uint8_t
 test_itostr();
 
-int
+uint8_t
 test_strtoi();
+
+uint8_t
+test_select();
 
 #endif /* TESTS_H */

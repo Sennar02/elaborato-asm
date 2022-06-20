@@ -27,7 +27,7 @@ asm_max:
 
     max_body:
         cmpl %ebx, %eax     # Confronta i due valori
-        jl max_return       # Se il primo valore è minore lo scambia.
+        jl   max_return     # Se il primo valore è minore lo scambia.
 
     max_return:
         movl %ebx, %eax     # Scambia il valore del massimo.

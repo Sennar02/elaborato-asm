@@ -31,4 +31,7 @@ asm_strnsep(char *arr[], int len, char **ptr, char sep);
 extern int
 asm_arrfind(const char *arr[], int len, const char *key);
 
+extern int
+asm_select(int val, int arr[], int len);
+
 #endif /* ASM_H */

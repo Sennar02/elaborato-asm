@@ -1,16 +1,16 @@
 /**
  * @file asm_strlen.s
  *
- * @brief Calcola la lunghezza di una stringa terminata
-          escludendo il carattere '\0'.
-
- * @param str Stringa.
- * @return Lunghezza della stringa passata.
+ * @brief Calcola la lunghezza di una stringa
+ *        escludendo il carattere terminatore.
+ *
+ * @param str Stringa su cui operare.
+ *
+ * @return La lunghezza.
  */
 
 .text
 
-/* Esportazione della funzione "asm_strlen". */
 .global asm_strlen
 .type asm_strlen, @function
 
@@ -22,20 +22,17 @@ asm_strlen:
         /* Salvataggio registri. */
         push %esi
 
-    movl 8(%ebp), %esi      # Copia la stringa.
-
-    movl %esi, %eax         # Copia la stringa in EAX.
+    movl 8(%ebp), %eax      # Copia la stringa in %eax.
+    movl %eax, %esi         # ed in %esi.
 
     strlen_loop:
-        cmpb $0, (%esi)         # Confronta il carattere con '\0'.
-        je   strlen_diff        # Se è uguale a '\0' esce dal ciclo.
-
-        incl %esi               # Posiziona il puntatore al prossimo carattere.
+        cmpb $0, (%eax)         # Se il carattere equivale al terminatore.
+        je   strlen_diff        # allora esce dal ciclo.
+        incl %eax               # Incrementa il puntatore al carattere successivo.
         jmp  strlen_loop
 
     strlen_diff:
-        subl %eax, %esi         # Calcola la differenza tra i puntatori.
-        movl %esi, %eax         # Restituisce la differenza.
+        subl %esi, %eax         # Restituisce la differenza tra i due puntatori.
 
     strlen_epilogue:
         /* Ripristino registri. */
