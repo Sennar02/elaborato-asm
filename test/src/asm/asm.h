@@ -34,4 +34,10 @@ asm_arrfind(const char *arr[], int len, const char *key);
 extern int
 asm_select(int val, int arr[], int len);
 
+extern void
+telemetry_loop(int idx, char *src, char *dst);
+
+extern int
+telemetry(char *src, char *dst);
+
 #endif /* ASM_H */
