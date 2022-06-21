@@ -30,7 +30,7 @@ invalid_pilot_str: .ascii "Invalid\0"
 .type telemetry, @function
 
 telemetry:
-    telemetry_prologue:
+    telem_prologue:
         /* Salvataggio base ptr. */
         push %ebp
         movl %esp, %ebp
@@ -40,8 +40,9 @@ telemetry:
         push %esi
         push %ebx
 
-    leal pilot_19_str, %esi
-    movl %esi, -4(%ebp)
+    /* Carica tutti i piloti nello stack. */
+    leal pilot_19_str, %esi     # Copia l'indirizzo della stringa in %esi.
+    movl %esi, -4(%ebp)         # e poi lo copia nello stack.
     leal pilot_18_str, %esi
     movl %esi, -8(%ebp)
     leal pilot_17_str, %esi
@@ -81,24 +82,50 @@ telemetry:
     leal pilot_00_str, %esi
     movl %esi, -80(%ebp)
 
+    /* Copia l'indirizzo della stringa sorgente. */
     movl %ebp, %esi
     addl $8, %esi
 
+    /* Ottiene la prima riga. */
     push $10
     push %esi
     call asm_strsep
     addl $8, %esp
 
-    movl %ebp, %esi
-    subl $80, %esi
+    movl %ebp, %ebx
+    subl $80, %ebx
 
+    /* Ricerca l'ID del pilota. */
     push %eax
     push $20
-    push %esi
+    push %ebx
     call asm_arrfind
     addl $12, %esp
 
-    telemetry_epilogue:
+    /* Se l'ID è maggiore o uguale a 0. */
+    cmpl $0, %eax
+    jl   telem_invalid
+
+    /* Chiama la funzione loop. */
+    push 12(%ebp)
+    push 8(%ebp)
+    push %eax
+    call telemetry_loop
+    addl $12, %esp
+
+    jmp  telem_return
+
+    telem_invalid:
+        push $8
+        leal invalid_pilot_str, %esi
+        push 12(%ebp)
+        call asm_strlcpy
+        addl $12, %esp
+
+    telem_return:
+        xorl %eax, %eax
+
+    telem_epilogue:
         /* Ripristino registri. */
         pop %ebx
         pop %esi
