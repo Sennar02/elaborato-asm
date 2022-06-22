@@ -1,5 +1,5 @@
 /**
- * @file asm_telemetry_last.s
+ * @file telemetry_last.s
  *
  * @brief Prende un vettore di interi e li trasforma in stringa
  *        separando i numeri con una ','.
@@ -11,11 +11,11 @@
 
 .text
 
-/* Esportazione della funzione "asm_telemetry_last". */
-.global asm_telemetry_last
-.type asm_telemetry_last, @function
+/* Esportazione della funzione "telemetry_last". */
+.global telemetry_last
+.type telemetry_last, @function
 
-asm_telemetry_last:
+telemetry_last:
     telemetry_last_prologue:
         /* Salvataggio base ptr. */
         push %ebp
