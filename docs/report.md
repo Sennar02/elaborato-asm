@@ -46,7 +46,7 @@ strncmp(const char *str1, const char *str2, int num);
 
 La funzione accetta in ingresso due stringhe e un intero, calcola se le due stringhe sono uguali.
 
-All'inizio Dichiara due caratteri inizializzati a 0 (`'\0'`) che vengono usati in un ciclo per scorrere i caratteri puntati nelle due stringhe. Se si trovano dei caratteri diversi, se si raggiunge il terminatore della prima stringa o se sono stati confrontati il numero di caratteri dato dal valore intero passato come parametro, il ciclo viene concluso. Alla fine compie una sottrazione tra i caratteri puntati alla conclusione del ciclo. Se la differenza è uguale a 0, le stringhe sono uguali.
+All'inizio dichiara due caratteri inizializzati a 0 (`'\0'`) che vengono usati in un ciclo per scorrere i caratteri puntati nelle due stringhe. Se si trovano dei caratteri diversi, se si raggiunge il terminatore della prima stringa o se sono stati confrontati il numero di caratteri dato dal valore intero passato come parametro, il ciclo viene concluso. Alla fine compie una sottrazione tra i caratteri puntati alla conclusione del ciclo. Se la differenza è uguale a 0, le stringhe sono uguali.
 
 ```c
 int
@@ -71,7 +71,7 @@ strnrev(char *str, int num);
 
 La funzione accetta in ingresso una stringa e un valore intero che indica il numero di caratteri della stringa da invertire.
 
-Inizialmente Copia la stringa da invertire in due stringhe e dichiara un carattere inizializzato a 0 (`'\0'`). Nella seconda stringa somma al puntatore un valore intero passato come parametro.  
+Inizialmente copia la stringa da invertire in due stringhe e dichiara un carattere inizializzato a 0 (`'\0'`). Nella seconda stringa somma al puntatore il valore intero passato come parametro.  
 Dopodichè scorre i caratteri, scambiando i caratteri correnti puntati, incrementa il puntatore alla prima stringa e decrementa il puntatore alla seconda. Se il puntatore alla prima stringa è maggiore del puntatore alla seconda, conclude il ciclo. Infine restituisce i caratteri invertiti della stringa.
 
 ```c
@@ -94,9 +94,9 @@ int
 strncpy(char *dst, const char *src, int num);
 ```
 
-La funzione accetta come parametro due stringhe, una  destinazione e una sorgente, e un valore intero. Copia il numero di caratteri della sorgente, dato dal valore intero, nella destinazione.
+La funzione accetta come parametro due stringhe, una destinazione e una sorgente, e un valore intero. Copia un certo numero di caratteri della sorgente, dato dal valore intero, nella destinazione.
 
-Copia gl'indirizzi delle due stringhe e scorre i puntatori finche il valore intero è maggiore di 0. Copia il carattere puntato nella sorgente nel puntatore alla destinazione e conclude il ciclo se uno i caratteri puntati è un terminatore, altrimenti incrementa i puntatori. Alla fine restituisce il numero di caratteri copiati, dato dalla differenza tra i due puntatori.
+Copia gl'indirizzi delle due stringhe, poi scorre i puntatori decrementando il valore intero finché non è minore di 0. Copia il carattere puntato nella sorgente in quello puntato nella destinazione e conclude il ciclo se uno dei caratteri puntati è un terminatore, altrimenti incrementa i puntatori. Alla fine restituisce il numero di caratteri copiati, dato dalla differenza tra i due puntatori.
 
 Se il valore intero passato è maggiore della lunghezza della sorgente, e la sorgente ha il carattere terminatore, la destinazione viene terminata.
 
@@ -123,7 +123,7 @@ int
 strlcpy(char *dst, const char *src, int num);
 ```
 
-La funzione accetta come parametro due stringhe, una  destinazione e una sorgente, e un valore intero. Copia il numero di caratteri della sorgente, dato dal valore intero, nella destinazione e aggiunge il terminatore.
+La funzione accetta come parametro due stringhe, una destinazione e una sorgente, e un valore intero. Copia un certo numero di caratteri della sorgente, dato dal valore intero, nella destinazione e aggiunge il terminatore.
 
 Copia gl'indirizzi delle due stringhe e scorre i puntatori finche il valore intero è maggiore di 0. Copia il carattere puntato nella sorgente nel puntatore alla destinazione e conclude il ciclo se uno i caratteri puntati è un terminatore, altrimenti incrementa i puntatori. Poi aggiunge il carattere terminatore alla destinazione. Infine restituisce il numero di caratteri copiati, dato dalla differenza tra i due puntatori.
 
@@ -154,9 +154,9 @@ unsigned int
 strtoi(const char *str, int base);
 ```
 
-La funzione accetta in ingresso una stringa e una base di conversione, converte la stringa alla base passata come parametro.
+La funzione accetta in ingresso una stringa e una base di conversione, converte la stringa in un valore dato dalla base.
 
-Parte dichiarando un valore intero a zero, poi scorre i caratteri puntati della stringa finche il loro codice ascii è compreso tra quello dei valori numerici. Quindi salva nel valore intero dichiarato all'inizio il valore stesso moltiplicato per la base, somma il valore del carattere puntato e poi sottrae 48, cioè il valore ascii corrispondente a 0, da cui partono le altre cifre decimali. Alla fine restituisce la stringa convertita.
+Dichiara un valore intero a zero e scorre i caratteri puntati della stringa finché il loro codice ascii è compreso tra quello dei valori numerici. Quindi salva nel valore intero dichiarato all'inizio il valore stesso moltiplicato per la base, somma il valore del carattere puntato e poi sottrae 48, cioè il valore ascii corrispondente a 0, da cui partono le altre cifre decimali. Alla fine restituisce la stringa convertita.
 
 ```c
 unsigned int
@@ -180,8 +180,8 @@ itostr(unsigned int num, char *str, int base);
 
 La funzione accetta in ingresso un numero intero, una stringa e un valore intero come base di conversione, converte il numero intero in una stringa.
 
-Prima di tutto copia il numero intero e il puntatore a stringa. Se il numero è uguale a 0 aggiunge semplicemente 48 al puntatore alla stringa, che poi viene incrementato. Altrimenti scorre il numero intero, converte ogni cifra (ottenuto come resto della divisione per la base) in un carattere che viene salvato nella stringa copiata e poi divide il numero per la base. Il ciclo continua finche il numero diviso è maggiore di 0.  
-Dopo queste operazioni aggiunge alla stringa il carattere terminatore, inverte la stringa con la funzione `strnrev` e infine la restituisce.
+Copia il numero intero e il puntatore alla stringa. Se il numero è uguale a 0 aggiunge semplicemente 48 al puntatore, che poi viene incrementato. Altrimenti scorre il numero intero convertendo ogni cifra (ottenuta come resto della divisione per la base) in un carattere che viene salvato nella stringa copiata e poi divide il numero per la base. Il ciclo continua finche il numero diviso è maggiore di 0.  
+Dopo queste operazioni aggiunge alla stringa il carattere terminatore, inverte la stringa con la funzione `strnrev` e la restituisce.
 
 ```c
 char *
@@ -213,8 +213,8 @@ strsep(char **ptr, char sep)
 
 La funzione accetta in ingresso una stringa e un carattere separatore, restituisce il pezzo di stringa precendente al separatore.
 
-Inizia copiando in due ulteriori stringhe quella passata come parametro e controlla se la prima stringa contiene dei caratteri. Prosegue incrementando il puntatore alla prima stringa finche non si raggiunge la sua fine o un carattere che è uguale al separatore.
-Concluso il ciclo, se il carattere puntato è uguale al terminatore, lo aggiunge alla stringa passata come parametro. Se invece il carattere puntato è diverso dal terminatore lo sostituisce con il terminatore e sostituisce la stringa passata come parametro con il pezzo restante di stringa successivo al separatore. Per finire, restituisce la seconda stringa dichiarata all'inizio, che ha subito le modifiche avvenute durante l'esecuzione.  
+Copia in due ulteriori stringhe quella passata come parametro e controlla se la prima stringa contiene dei caratteri. Incrementando il puntatore alla prima stringa finche non si raggiunge la sua fine o un carattere che è uguale al separatore.
+Concluso il ciclo, se il carattere puntato è uguale al terminatore, lo aggiunge alla stringa passata come parametro. Se invece il carattere puntato è diverso dal terminatore lo sostituisce con il terminatore e sostituisce la stringa passata come parametro con il pezzo restante di stringa successivo al separatore. Quindi restituisce la seconda stringa dichiarata all'inizio, che ha subito le modifiche avvenute durante l'esecuzione.  
 Se la stringa passata come parametro non contiene nessun carattere, la restituisce senza compiere ulteriori operazioni.
 
 ```c
@@ -245,7 +245,7 @@ int
 strnsep(char *arr[], int num, char **ptr, char sep)
 ```
 
-La funzione accetta in ingresso un array di stringhe, la sua lunghezza, una stringa e un carattere separatore, restituisce il numero di volte in cui è avvenuta una separazione della stringa.  
+La funzione accetta in ingresso un array di stringhe, la sua lunghezza, una stringa e un carattere separatore. Restituisce il numero di volte in cui è avvenuta una separazione della stringa.  
 
 Inizializza 2 variabili intere a 0 e prosegue con un ciclo che finisce quando la seconda variabile è uguale al numero passato come parametro, che equivale alla lunghezza dell'array. Dentro il ciclo salva nella posizione puntata nell'array di stringhe il risultato della funzione `strsep`, e se è diverso da 0 incrementa il conteggio delle separazioni (prima variabile intera), altrimenti prosegue col ciclo. Quando questo finisce, restituisce il conteggio delle separazioni.
 
@@ -272,7 +272,7 @@ arrfind(const char *arr[], int len, const char *key);
 
 La funzione accetta in ingresso un array di stringhe, la sua lunghezza e una stringa, indica se nell'array è presente la stringa passata.  
 
-Salva in una variabile la lunghezza della stringa passata come parametro, poi inizia un ciclo che finisce quando l'indice del ciclo è uguale alla lunghezza dell'array. Nel ciclo utilizza la funzione `strncmp` per confrontare la stringa passata con quella dell'array nella posizione data dall'indice del ciclo. Se le stringhe coincidono, restituisce la posizione della stringa nell'array. Se il ciclo invece continua fino alla fine, restituisce -1, che indica che la stringa non è stata trovata.
+Salva in una variabile la lunghezza della stringa passata come parametro. Confronta la stringa passata con ogni stringa dell'array utilizzando la funzione `strncmp`. Se trova la stringa corrispondente, restituisce la sua posizione nell'array. Se alla fine dell'array non ha trovato la stringa, restituisce -1.
 
 ```c
 int
