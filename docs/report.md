@@ -78,6 +78,40 @@ blabla
 
 ## Funzioni
 
+Abbiamo suddiviso il programma in varie routine alle quali forniamo i parametri tramite lo stack del programma. Questo metodo richiede particolare attenzione perché lo stack viene usata anche dal sistema stesso. 
+
+### CHIAMATA DI UNA FUNZIONE E PASSAGGIO PARAMETRI
+
+Nel blocco chiamante di una funzione: 
+
+- abbiamo caricato nello stack, dopo averli inseriti negli opportuni registri, i parametri da passare alla funzione, in ordine inverso in modo da estrarli più comodamente; 
+
+- abbiamo utilizzato l’istruzione `call`, che invoca la funzione specificata. Dopo che la funzione è terminata, il valore restituito, se presente, si trova in `%eax`; 
+
+- conclusa la funzione, abbiamo liberato lo spazio di memoria che era stato riservato ai parametri della funzione, incrementando `%esp` di 4 byte per parametro, dato che siamo in un’architettura a 32 bit. 
+
+### INIZIO/CONCLUSIONE DI UNA FUNZIONE E RESTITUZIONE DI UN VALORE
+
+Nel blocco della funzione chiamata, durante la fase iniziale:
+
+- abbiamo caricato il valore di `%ebp` nello stack, per salvare così il suo valore iniziale e ripristinarlo una volta conclusa la funzione;
+
+- abbiamo salvato lo stack pointer in `%ebp`. Per accedere ai parametri e alle variabili locali si utilizza `%ebp` e un offset;
+
+- abbiamo caricato nello stack i registri che utilizzeremo nella funzione e i cui valori vogliamo ripristinare conclusa la funzione;
+
+- abbiamo utilizzato `%ebp` con un certo offset per salvare i parametri della funzione negli opportuni registri. 
+
+Prima di concludere la funzione: 
+
+- abbiamo salvato nel registro `%eax`  l’eventuale valore da restituire; 
+
+- abbiamo estratto i registri caricati all’inizio della funzione; 
+
+- abbiamo estratto `%ebp` ripristinando così la sua posizione; 
+
+- abbiamo utilizzato l’istruzione `ret`, terminando la funzione e posizionando il programma all’istruzione successiva alla `call`. 
+
 ### strlen
 
 ```c
