@@ -1,10 +1,76 @@
-# Titolo relazione
+# Sistema di telemetria F1
 
-...blablabla
+Abbiamo sviluppato un programma in linguaggio *Assembly* sintassi **AT&T** che simula il sistema di telemetria del videogame F1.
 
 ## Traccia
 
-blabla
+Il sistema prende in input per tutti i piloti ad ogni istante di tempo i dati grezzi di:
+
+- **giri motore** (*rpm*);
+- **temperatura motore** ;
+- **velocità** .
+
+### Parametri
+
+I parametri vengono passati nel seguente ordine separati da una virgola `','`
+
+```csv
+tempo, id_pilota, velocità, rpm, temperatura
+```
+
+dove il campo `id_pilota` rappresenta un valore numerico, indice univoco del pilota.
+
+I parametri restituiti vengono ordinati nella seguente maniera
+
+```csv
+tempo, livello rpm, livello temperatura, livello velocità
+```
+
+dove i tre livelli assumono in base a delle soglie uno dei seguenti valori: `"LOW"`, `"MEDIUM"`, `"HIGH"`.
+
+### Obiettivo
+
+Il programma in *Assembly* prende la prima riga contenente il nome dell'utente, in caso esso corrisponda ad un **id** presente in tabella vengono restituiti tutti i dati relativi a quel pilota in base alle soglie, nello specifico:
+
+| **Parametro**         | `"LOW"`       | `"MEDIUM"`           | `"HIGH"`      |
+| :-------------------: | :-----------: | :------------------: | :-----------: |
+| **Giri motore (rpm)** | *rpm ≤ 500*   | *5000 < rpm ≤ 10000* | *rpm > 110*   |
+| **Temperatura**       | *temp ≤ 90*   | *90 < temp ≤ 110*    | *temp > 110*  |
+| **Velocità**          | *speed ≤ 110* | *100 < speed ≤ 250*  | *speed > 250* |
+
+Inoltre deve essere aggiunta un'ulteriore riga che contiene nel seguente ordine: il numero massimo di **giri motore** (rpm), la **temperatura massima**, la **velocità massima** e la **velocità media**. La sua struttura è:
+
+```csv
+rpm max, temp max, velocità max, velocità media
+```
+
+### Vincoli
+
+- La velocità media è calcolata prendendo solamente la parte intera del quoziente.
+- Se il nome dell'utente non corrisponde ad nessun **id** viene stampata la stringa `"Invalid"`.
+
+<!-- | **ID** | **Pilota**         |
+| :----- | -----------------: |
+| 0      | Pierre Gasly       |
+| 1      | Charles Leclerc    |
+| 2      | Max Verstappen     |
+| 3      | Lando Norris       |
+| 4      | Sebastian Vettel   |
+| 5      | Daniel Ricciardo   |
+| 6      | Lance Stroll       |
+| 7      | Carlos Sainz       |
+| 8      | Antonio Giovinazzi |
+| 9      | Kevin Magnussen    |
+| 10     | Alexander Albon    |
+| 11     | Nicholas Latifi    |
+| 12     | Lewis Hamilton     |
+| 13     | Romain Grosjean    |
+| 14     | George Russell     |
+| 15     | Sergio Perez       |
+| 16     | Daniil Kvyat       |
+| 17     | Kimi Raikkonen     |
+| 18     | Esteban Ocon       |
+| 19     | Valtteri Bottas    | -->
 
 ## Variabili
 
@@ -12,14 +78,14 @@ blabla
 
 ## Funzioni
 
-### strlen  
+### strlen
 
 ```c
 unsigned int
 strlen(const char *str);
 ```
 
-La funzione accetta in ingresso una stringa e ne calcola la lunghezza.  
+La funzione accetta in ingresso una stringa e ne calcola la lunghezza.
 
 Prima di tutto copia l'indirizzo, poi incrementa il puntatore finché il carattere non equivale al terminatore (`'\0'`). Infine restituisce la differenza tra l'indirizzo del terminatore e quello originale, cioè la distanza tra i due e quindi la lunghezza della stringa.
 
@@ -37,7 +103,7 @@ strlen(const char *str)
 }
 ```
 
-### strncmp  
+### strncmp
 
 ```c
 int
@@ -124,7 +190,7 @@ strlcpy(char *dst, const char *src, int num);
 
 La funzione accetta come parametro due stringhe, destinazione e sorgente, e un valore intero. Copia un certo numero di caratteri della sorgente nella destinazione e aggiunge il terminatore.
 
-Copia gl'indirizzi delle due stringhe e scorre i puntatori finche il valore intero è maggiore di 0. Copia il puntatore alla sorgente nel puntatore alla destinazione e conclude il ciclo se uno i caratteri puntati è un terminatore, altrimenti incrementa i puntatori. Poi aggiunge il carattere terminatore alla destinazione. Restituisce quinti il numero di caratteri copiati, dato dalla differenza tra i due puntatori.
+Copia gl'indirizzi delle due stringhe e scorre i puntatori finché il valore intero è maggiore di 0. Copia il puntatore alla sorgente nel puntatore alla destinazione e conclude il ciclo se uno i caratteri puntati è un terminatore, altrimenti incrementa i puntatori. Poi aggiunge il carattere terminatore alla destinazione. Restituisce quinti il numero di caratteri copiati, dato dalla differenza tra i due puntatori.
 
 ```c
 int
@@ -155,7 +221,7 @@ strtoi(const char *str);
 
 La funzione accetta in ingresso una stringa, converte la stringa in un valore in base 10.
 
-Dichiara un valore intero a zero e scorre i caratteri puntati della stringa finché il loro codice ascii è compreso tra quello dei valori numerici. Quindi salva nel valore intero dichiarato all'inizio il valore stesso moltiplicato per 10, somma il valore del carattere puntato e poi sottrae 48 (il valore ascii corrispondente a 0, da cui partono le altre cifre decimali). Infine restituisce la stringa convertita.
+Dichiara un valore intero a zero e scorre i caratteri puntati della stringa finché il loro codice ASCI è compreso tra quello dei valori numerici. Quindi salva nel valore intero dichiarato all'inizio il valore stesso moltiplicato per 10, somma il valore del carattere puntato e poi sottrae 48 (il valore ASCI corrispondente a 0, da cui partono le altre cifre decimali). Infine restituisce la stringa convertita.
 
 ```c
 unsigned int
@@ -209,10 +275,10 @@ char*
 strsep(char **ptr, char sep)
 ```
 
-La funzione accetta in ingresso una stringa e un carattere separatore, restituisce il pezzo di stringa precendente al separatore.
+La funzione accetta in ingresso una stringa e un carattere separatore, restituisce il pezzo di stringa precedente al separatore.
 
 Copia in due ulteriori stringhe quella passata come parametro e controlla se la prima stringa contiene dei caratteri. Incrementa il puntatore alla prima stringa finche non si raggiunge la sua fine o un carattere che è uguale al separatore.
-Concluso il ciclo, se il carattere puntato è uguale al terminatore, lo aggiunge alla stringa passata come parametro. Se invece il carattere puntato è diverso dal terminatore lo sostituisce con il terminatore e sostituisce la stringa passata come parametro con il pezzo restante di stringa successivo al separatore. Quindi restituisce la seconda stringa dichiarata all'inizio, che ha subito le modifiche avvenute durante l'esecuzione.  
+Concluso il ciclo, se il carattere puntato è uguale al terminatore, lo aggiunge alla stringa passata come parametro. Se invece il carattere puntato è diverso dal terminatore lo sostituisce con il terminatore e sostituisce la stringa passata come parametro con il pezzo restante di stringa successivo al separatore. Quindi restituisce la seconda stringa dichiarata all'inizio, che ha subito le modifiche avvenute durante l'esecuzione.
 Se la stringa passata come parametro non contiene nessun carattere, la restituisce senza compiere ulteriori operazioni.
 
 ```c
@@ -243,7 +309,7 @@ int
 strnsep(char *arr[], int num, char **ptr, char sep)
 ```
 
-La funzione accetta in ingresso un array di stringhe, la sua lunghezza, una stringa e un carattere separatore. Restituisce il numero di volte in cui è avvenuta una separazione della stringa.  
+La funzione accetta in ingresso un array di stringhe, la sua lunghezza, una stringa e un carattere separatore. Restituisce il numero di volte in cui è avvenuta una separazione della stringa.
 
 Inizializza 2 variabili intere a 0 e prosegue con un ciclo che finisce quando la seconda variabile è uguale alla lunghezza dell'array. Dentro il ciclo salva nella posizione puntata nell'array il risultato della funzione `strsep`, se è diverso da 0 incrementa il conteggio delle separazioni (prima variabile intera), altrimenti prosegue col ciclo. Concluso il ciclo restituisce il conteggio delle separazioni.
 
@@ -268,7 +334,7 @@ int
 arrfind(const char *arr[], int len, const char *key);
 ```
 
-La funzione accetta in ingresso un array di stringhe, la sua lunghezza e una stringa, indica se nell'array è presente la stringa passata.  
+La funzione accetta in ingresso un array di stringhe, la sua lunghezza e una stringa, indica se nell'array è presente la stringa passata.
 
 Salva in una variabile la lunghezza della stringa passata come parametro. Confronta la stringa passata con ogni stringa dell'array utilizzando la funzione `strncmp`. Se trova la stringa corrispondente, restituisce la sua posizione nell'array. Se alla fine dell'array non ha trovato la stringa, restituisce -1.
 
