@@ -150,21 +150,21 @@ strlcpy(char *dst, const char *src, int num)
 
 ```c
 unsigned int
-strtoi(const char *str, int base);
+strtoi(const char *str);
 ```
 
-La funzione accetta in ingresso una stringa e una base di conversione, converte la stringa in un valore nella base.
+La funzione accetta in ingresso una stringa, converte la stringa in un valore in base 10.
 
-Dichiara un valore intero a zero e scorre i caratteri puntati della stringa finché il loro codice ascii è compreso tra quello dei valori numerici. Quindi salva nel valore intero dichiarato all'inizio il valore stesso moltiplicato per la base, somma il valore del carattere puntato e poi sottrae 48 (il valore ascii corrispondente a 0, da cui partono le altre cifre decimali). Infine restituisce la stringa convertita.
+Dichiara un valore intero a zero e scorre i caratteri puntati della stringa finché il loro codice ascii è compreso tra quello dei valori numerici. Quindi salva nel valore intero dichiarato all'inizio il valore stesso moltiplicato per 10, somma il valore del carattere puntato e poi sottrae 48 (il valore ascii corrispondente a 0, da cui partono le altre cifre decimali). Infine restituisce la stringa convertita.
 
 ```c
 unsigned int
-strtoi(const char *str, int base)
+strtoi(const char *str)
 {
     int res = 0;
 
     while (*str >= 48 && *str <= 57)
-        res = res * base + *str++ - 48;
+        res = res * 10 + *str++ - 48;
 
     return res;
 }
@@ -174,25 +174,24 @@ strtoi(const char *str, int base)
 
 ```c
 char *
-itostr(unsigned int num, char *str, int base);
+itostr(unsigned int num, char *str);
 ```
 
-La funzione accetta in ingresso un numero intero, una stringa e un valore intero come base di conversione, converte il numero intero in una stringa.
+La funzione accetta in ingresso un numero intero in base 10 e una stringa, converte il numero intero in una stringa.
 
-Copia il numero intero e il puntatore alla stringa. Se il numero è uguale a 0 aggiunge semplicemente 48 al puntatore, che poi viene incrementato. Altrimenti scorre il numero intero convertendo ogni cifra (ottenuta come resto della divisione per la base) in un carattere che viene salvato nella stringa copiata e poi divide il numero per la base. Il ciclo continua finche il numero diviso è maggiore di 0.  
-Dopodichè aggiunge alla stringa il carattere terminatore, inverte la stringa con la funzione `strnrev` e la restituisce.
+Copia il numero intero e il puntatore alla stringa. Se il numero è uguale a 0 aggiunge semplicemente 48 al puntatore, che poi viene incrementato. Altrimenti scorre il numero intero convertendo ogni cifra (ottenuta come resto della divisione per 10) in un carattere che viene salvato nella stringa copiata e poi divide il numero per la 10. Il ciclo continua finche il numero diviso è maggiore di 0. Aggiunge alla stringa il carattere terminatore, inverte la stringa con la funzione `strnrev` e la restituisce.
 
 ```c
 char *
-itostr(unsigned int num, char *str, int base)
+itostr(unsigned int num, char *str)
 {
     int n = num;
     char *s = str;
 
     if (num != 0) {
         do {
-            *s++ = (num % base) + 48;
-        }  while (num /= base);
+            *s++ = (num % 10) + 48;
+        }  while (num /= 10);
     } else
         *s++ = 48;
 
