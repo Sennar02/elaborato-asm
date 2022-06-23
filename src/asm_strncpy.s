@@ -1,19 +1,22 @@
 /**
  * @file asm_strncpy.s
  *
- * @brief Copia num caratteri da src a dst.
-          Se num è maggiore della lunghezza di src la stringa
-          dst viene terinata nel caso in cui anche src lo sia.
+ * @brief Copia un certo numero di caratteri da una stringa
+ *        in un altra.
+ *
+ * Solamente se il numero di caratteri da copiare supera la
+ * lunghezza della stringa sorgente, allora viene copiato
+ * anche il terminatore.
  *
  * @param dst Stringa di destinazione.
  * @param src Stringa sorgente.
- * @param num Numero di caratteri da copiare.
- * @return Numero di caratteri copiati.
+ * @param num Numero massimo di caratteri da copiare.
+ *
+ * @return Numero di caratteri copiati effettivamente.
  */
 
 .text
 
-/* Esportazione della funzione "asm_strncpy". */
 .global asm_strncpy
 .type asm_strncpy, @function
 
@@ -27,29 +30,27 @@ asm_strncpy:
         push %edi
         push %ebx
 
-    movl 8(%ebp), %edi      # Copia la stinga di destinazione.
+    movl 8(%ebp), %edi      # Copia la stinga di destinazione in %edi.
+    movl %edi, %edx         # ed in %edx.
     movl 12(%ebp), %esi     # Copia la stringa sorgente.
-    movl 16(%ebp), %ebx     # Copia la lunghezza.
-
-    movl %ebx, %edx
+    movl 16(%ebp), %ebx     # Copia il numero massimo di caratteri.
 
     strncpy_loop:
-        test %ebx, %ebx         # Confronta la lunghezza con 0.
-        jle  strncpy_return     # Se è uguale a 0 esce dal ciclo.
-        decl %ebx               # Decrementa di 1 la lunghezza.
+        test %ebx, %ebx         # Se sono già stati copiati tutti i caratteri.
+        jle  strncpy_return     # allora esce dal ciclo.
+        decl %ebx               # Altrimenti decrementa il contatore.
 
-        movb (%esi), %al        # Copia l'n-esimo carattere della stringa sorgente in AL.
-        incl %esi               # Incrementa il puntatore del carattere.
-        movb %al, (%edi)        # Carica il carattere nella stringa di destinazione.
+        movb (%esi), %al        # Copia un carattere della stringa sorgente.
+        incl %esi               # Incrementa il puntatore al carattere successivo.
+        movb %al, (%edi)        # Copia il carattere nella stringa di destinazione.
+        incl %edi               # Incrementa il puntatore al carattere successivo.
 
-        incl %edi               # Incrementa il puntatore del carattere.
-
-        test %al, %al           # Confronta il carattere con '\0'.
-        jnz  strncpy_loop       # Se non è uguale a '\0' la stringa non è terminata.
+        test %al, %al           # Se il carattere copiato equivale al terminatore.
+        jnz  strncpy_loop       # allora esce dal ciclo.
 
     strncpy_return:
         movl %edi, %eax         # Copia il puntatore all'ultimo carattere.
-        subl 8(%ebp), %eax      # Restituisce la differenza tra i due puntatori.
+        subl %edx, %eax         # Restituisce la differenza con il puntatore originale.
 
     strncpy_epilogue:
         /* Ripristino registri. */

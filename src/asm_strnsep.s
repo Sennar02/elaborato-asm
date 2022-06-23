@@ -1,15 +1,15 @@
 /**
- * @file asm_strsep.s
+ * @file asm_strnsep.s
  *
- * @brief Separa una stringa num volte ad ogni occcorrenza del separatore,
-          se non sono presenti abbastanza separatori le celle rimanenti vengono
-          svuotate.
+ * @brief Spezza una stringa sul posto in base ad un certo
+ *        carattere separatore più volte.
  *
- * @param arr Array su cui salvare le stringhe.
+ * @param arr Array in cui salvare i segmenti.
  * @param num Lunghezza dell'array.
- * @param ptr Puntatore alla stringa da modificare.
+ * @param ptr Indirizzo della stringa da spezzare.
  * @param sep Carattere separatore.
- * @return Numero di separazioni che hanno dato un puntatore.
+ *
+ * @return Numero di separazioni non nulle.
  */
 
 .text
@@ -27,40 +27,39 @@ asm_strnsep:
         push %edi
         push %ebx
 
-    movl 8(%ebp), %esi      # Copia il puntatore all'array risultato.
+    movl 8(%ebp), %esi      # Copia il puntatore all'array.
     movl 12(%ebp), %ecx     # Copia la lunghezza dell'array.
-    movl 16(%ebp), %edi     # Copia il puntatore alla stringa da modificare.
+    movl 16(%ebp), %edi     # Copia il puntatore alla stringa.
     movl 20(%ebp), %ebx     # Copia il carattere separatore.
 
     xorl %edx, %edx
 
     strnsep_loop:
-        test %ecx, %ecx
-        jz   strnsep_return
-        decl %ecx
+        test %ecx, %ecx         # Se sono state riempite tutte le celle.
+        jz   strnsep_return     # esce dal ciclo.
+        decl %ecx               # Altrimenti decrementa il contatore.
 
-        push %edx               # Salva il valore di EDX.
+        push %edx               # Salva il valore nello stack.
 
-        # Separa la stringa
         push %ebx               # Carica il carattere separatore.
         push %edi               # Carica il puntatore alla stringa.
-        call asm_strsep         # Chiama la funzione asm_strsep.
-        addl $8, %esp           # Scarica i parametri dallo stack.
+        call asm_strsep         # Spezza la stringa.
+        addl $8, %esp           # Scarica i due parametri dallo stack.
 
-        pop %edx                # Riprende il valore di EDX.
+        pop %edx                # Riprende il valore dallo stack.
 
-        movl %eax, (%esi)       # Aggiorna il puntatore della stringa.
-        addl $4, %esi           # Incrementa l'indice dell'array.
+        movl %eax, (%esi)       # Inserisce il segmento nell'array.
+        addl $4, %esi           # Incrementa l'array al puntatore successivo.
 
-        test %eax, %eax         # Confronta l'indirizzo con NULL.
-        jz   strnsep_repeat     # Se è diverso da NULL.
-        incl %edx               # Incrementa l'indirizzo.
+        test %eax, %eax         # Se il segmento non è nullo.
+        jnz  strnsep_repeat     # allora ricomincia il ciclo.
+        incl %edx               # Altrimenti incrementa il contatore di risultati non nulli.
 
         strnsep_repeat:
             jmp strnsep_loop
 
     strnsep_return:
-        movl %edx, %eax
+        movl %edx, %eax         # Restituisce il numero di risultati non nulli.
 
     strnsep_epilogue:
         /* Ripristino registri. */

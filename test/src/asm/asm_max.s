@@ -1,16 +1,16 @@
 /**
  * @file asm_mean.s
  *
- * @brief Controlla qual è il massimo tra due valori.
+ * @brief Restituisce il massimo tra due interi.
  *
- * @param Primo valore.
- * @param Secondo valore.
- * @return Valore massimo.
+ * @param val Primo valore.
+ * @param max Secondo valore.
+ *
+ * @return Il valore massimo.
  */
 
 .text
 
-/* Esportazione della funzione "asm_max". */
 .global asm_max
 .type asm_max, @function
 
@@ -25,12 +25,13 @@ asm_max:
     movl 8(%ebp), %eax      # Copia il primo valore.
     movl 12(%ebp), %ebx     # Copia il secondo valore.
 
-    max_body:
-        cmpl %ebx, %eax     # Confronta i due valori
-        jl max_return       # Se il primo valore è minore lo scambia.
+    max_compare:
+        cmpl %ebx, %eax     # Se il primo valore è minore del secondo.
+        jl   max_return     # allora restituisce il secondo.
+        jmp  max_epilogue   # Altrimenti restituisce il primo.
 
     max_return:
-        movl %ebx, %eax     # Scambia il valore del massimo.
+        movl %ebx, %eax     # Restituisce il secondo valore.
 
     max_epilogue:
         /* Ripristino registri. */
