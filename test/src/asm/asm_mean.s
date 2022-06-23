@@ -1,16 +1,16 @@
 /**
  * @file asm_mean.s
  *
- * @brief Calcola la media.
+ * @brief Calcola un'approssimazione della media di un insieme di numeri.
  *
- * @param Somma di tutti i valori.
- * @param Numero di elementi.
- * @return Media approssimata per difetto.
+ * @param sum Somma di tutti i valori.
+ * @param cnt Quantità di valori.
+ *
+ * @return La media approssimata per difetto.
  */
 
 .text
 
-/* Esportazione della funzione "asm_mean". */
 .global asm_mean
 .type asm_mean, @function
 
@@ -27,7 +27,7 @@ asm_mean:
 
     xorl %edx, %edx
 
-    mean_body:
+    mean_calc:
         divl %ebx           # Divide la somma per la lunghezza.
 
     mean_epilogue:

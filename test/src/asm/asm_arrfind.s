@@ -1,18 +1,18 @@
 /**
  * @file asm_arrfind.s
  *
- * @brief Cerca la chiave dentro l'array e restituisce
-          la sua relativa posizione.
+ * @brief Cerca una particolare chiave all'interno di un array.
  *
  * @param arr Array di stringhe.
  * @param len Lunghezza dell'array.
  * @param key Chiave da ricercare.
- * @return Posizione della stringa nell'array.
+ *
+ * @return -1 se non è presente, altrimenti la posizione
+ *         della stringa nell'array.
  */
 
 .text
 
-/* Esportazione della funzione "asm_arrfind". */
 .global asm_arrfind
 .type asm_arrfind, @function
 
@@ -23,36 +23,46 @@ asm_arrfind:
         movl %esp, %ebp
         /* Salvataggio registri. */
         push %esi
+        push %edi
         push %ebx
 
     movl 8(%ebp), %esi      # Copia l'indirizzo dell'array.
+    movl 12(%ebp), %ecx     # Copia la lunghezza dell'array in %ecx.
+    movl %ecx, %ebx         # ed in %ebx.
+    movl 16(%ebp), %edi     # Copia la chiave da ricercare.
 
-    xorl %ebx, %ebx         # Inizializzazione dell'indice.
+    /* Calcola la lunghezza. */
+    push %edi               # Carica la chiave nello stack.
+    call asm_strlen         # Ne calcola la lunghezza.
+    addl $4, %esp           # Scarica il parametro dallo stack.
+    movl %eax, %edx
 
     arrfind_loop:
-        cmpl %ebx, 12(%ebp)     # Confronta il contatore con la lunghezza dell'array.
-        je   arrfind_default    # Se è uguale a "len" esce dal ciclo.
+        test %ecx, %ecx         # Se ha già confrontato tutte le stringhe.
+        jz   arrfind_default    # allora esce dal ciclo.
+        decl %ecx               # Altrimenti decrementa il contatore.
 
-        # Calcola la lunghezza della chiave.
-        push 16(%ebp)           # Carica la chiave nello stack.
-        call asm_strlen         # Chiama la funzione asm_strlen.
-        addl $4, %esp           # Scarica i parametri dallo stack.
+        push %ecx               # Salva il valore nello stack.
 
-        # Confronta le due stringhe.
-        push %eax               # Carica la lunghezza della seconda stringa nello stack.
+        /* Confronta le stringhe. */
+        push %edx               # Carica la lunghezza della chiave nello stack.
         push (%esi)             # Carica l'indirizzo dell'elemento dell'array.
-        push 16(%ebp)           # Carica la chiave.
-        call asm_strncmp        # Chiama la funzione asm_strncmp.
-        addl $12, %esp          # Scarica i parametri dallo stack.
+        push %edi               # Carica la chiave.
+        call asm_strncmp        # Confronta le due stringhe.
+        addl $8, %esp           # Scarica i parametri dallo stack.
 
-        test %eax, %eax         # Confronta il risultato con 0.
-        jz   arrfind_result     # Se è uguale a 0 esce dal ciclo.
-        incl %ebx               # Incremeta il contatore.
-        addl $4, %esi           # Sposta il puntatore dell'array all'elemento successivo.
+        addl $4, %esi           # Incrementa il puntatore alla stringa successiva.
+        pop %edx                # Riprende il valore dallo stack.
+        pop %ecx                # Riprende il valore dallo stack.
+
+        test %eax, %eax         # Se le due stringhe sono uguali.
+        jz   arrfind_result     # allora esce dal ciclo.
         jmp  arrfind_loop
 
     arrfind_result:
-        movl %ebx, %eax         # Restituisce il contatore.
+        movl %ebx, %eax         # Copia la lunghezza dell'array.
+        incl %ecx               # Incrementa il contatore.
+        subl %ecx, %eax         # Restituisce la differenza tra i due.
         jmp  arrfind_epilogue
 
     arrfind_default:
@@ -61,6 +71,7 @@ asm_arrfind:
     arrfind_epilogue:
         /* Ripristino registri. */
         pop %ebx
+        pop %edi
         pop %esi
         /* Ripristino base ptr. */
         pop %ebp

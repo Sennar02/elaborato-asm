@@ -1,16 +1,17 @@
 /**
  * @file asm_strsep.s
  *
- * @brief Separa una stringa alla prima occorrenza del carattere passato.
+ * @brief Spezza una stringa sul posto in base ad un certo
+ *        carattere separatore.
  *
- * @param ptr Puntatore a un stringa.
+ * @param ptr Indirizzo della stringa da spezzare.
  * @param sep Carattere separatore.
- * @return Pezzo della stringa dall'inizio fino al carattere passato.
+ *
+ * @return Segmento iniziale della stringa.
  */
 
 .text
 
-/* Esportazione della funzione "asm_strsep". */
 .global asm_strsep
 .type asm_strsep, @function
 
@@ -25,33 +26,33 @@ asm_strsep:
         push %ebx
 
     movl 8(%ebp), %esi      # Copia il puntatore alla stringa.
-    movb 12(%ebp), %bl      # Copia il carattere di separazione.
+    movb 12(%ebp), %bl      # Copia il carattere separatore.
 
-    movl (%esi), %edi       # Dereferenzia il puntatore.
-    movl %edi, %eax         # Copia il puntatore deferenziato per il valore di ritorno.
+    movl (%esi), %edi       # Copia il puntatore a stringa dereferenziato in %edi.
+    movl %edi, %eax         # ed in %eax.
 
-    test %edi, %edi
-    jz   strsep_epilogue
+    test %edi, %edi         # Se la stringa è nulla.
+    jz   strsep_epilogue    # allora esce dalla funzione.
 
     strsep_loop:
-        movb (%edi), %dl        # Copia l'n-esimo carattere della stringa in DL.
+        movb (%edi), %dl        # Copia un carattere della stringa.
 
-        test %dl, %dl           # Confronta il carattere con '\0'.
-        jz   strsep_else        # Se è uguale a '\0' esce dal ciclo.
-        cmpb %dl, %bl           # Confronta il carattere con il separatore.
-        je   strsep_repl        # Se è uguale al separatore esce dal ciclo.
+        test %dl, %dl           # Se il carattere è il terminatore.
+        jz   strsep_else        # allora esce dal ciclo.
+        cmpb %dl, %bl           # Se il carattere è uguale al separatore.
+        je   strsep_repl        # allora esce dal ciclo.
 
-        incl %edi               # Incrementa il puntatore del carattere.
+        incl %edi               # Incrementa il puntatore al carattere successivo.
         jmp  strsep_loop
 
     strsep_repl:
-        movb $0, (%edi)         # Termina la stringa con '\0'.
-        incl %edi               # Incrementa il puntatore del carattere.
-        movl %edi, (%esi)       # Sostituisce l'indirizzo del primo carattere.
+        movb $0, (%edi)         # Termina la stringa.
+        incl %edi               # Incrementa il puntatore al carattere successivo.
+        movl %edi, (%esi)       # Fa puntare la stringa dopo il separatore.
         jmp  strsep_epilogue
 
     strsep_else:
-        movl $0, (%esi)         # Azzera il puntatore a stringa.
+        movl $0, (%esi)         # Altrimenti azzera il puntatore.
 
     strsep_epilogue:
         /* Ripristino registri. */

@@ -1,16 +1,15 @@
 /**
  * @file asm_strtoi.s
  *
- * @brief Converte una stringa in un intero.
+ * @brief Converte una stringa in un intero di base 10.
  *
  * @param str Stringa da convertire.
- * @param base Base della conversione.
- * @return Numero intero.
+ *
+ * @return Numero intero nella base specificata.
  */
 
 .text
 
-/* Esportazione della funzione "asm_strtoi". */
 .global asm_strtoi
 .type asm_strtoi, @function
 
@@ -23,23 +22,23 @@ asm_strtoi:
         push %esi
         push %ebx
 
-    movl 8(%ebp), %esi      # Copia la stringa.
-    movl 12(%ebp), %ecx     # Copia la base.
+    movl 8(%ebp), %esi      # Copia la stringa da convertire.
 
     xorl %eax, %eax
     xorl %ebx, %ebx
+    movl $10, %ecx          # Copia la base del numero.
 
     strtoi_loop:
-        movb (%esi), %bl        # Copia l'n-esimo carattere della stringa in BL.
-        subb $48, %bl           # Sottrae 48 per convertilo da ASCII a numero.
+        movb (%esi), %bl        # Copia un carattere della stringa.
+        subb $48, %bl           # Trasforma il carattere ASCII nel suo valore.
 
-        cmpb $0, %bl            # Confronta il valore con 0.
-        jl   strtoi_epilogue    # Se è minore di 0 termina la funzione.
-        cmpb $9, %bl            # Confronta il valore con 9.
-        jg   strtoi_epilogue    # Se è maggiore di 9 termina la funzione.
+        cmpb $0, %bl            # Se il carattere è minore di 0.
+        jl   strtoi_epilogue    # esce dalla funzione.
+        cmpb $9, %bl            # Se il carattere è maggiore di 9.
+        jg   strtoi_epilogue    # esce dalla funzione.
 
-        mull %ecx               # Sfasa il risultato.
-        addl %ebx, %eax         # Aggiunge il valore al risultato sfasato.
+        mull %ecx               # Altrimenti moltiplica il numero per la base.
+        addl %ebx, %eax         # Aggiunge il carattere
         incl %esi               # Incrementa il puntatore del carattere.
         jmp  strtoi_loop
 

@@ -3,14 +3,15 @@
  *
  * @brief Verifica in quale intervallo si trova un determinato valore.
  *
- * @param Valore da controllare.
- * @param Array di interi che rappresentano le soglie.
- * @return L'intervallo di appartenenza del valore.
+ * @param val Valore su cui operare.
+ * @param arr Array di valori che determinano le soglie.
+ * @param len Lunghezza dell'array.
+ *
+ * @return L'indice dell'intervallo in cui si trova il valore.
  */
 
 .text
 
-/* Esportazione della funzione "asm_select". */
 .global asm_select
 .type asm_select, @function
 
@@ -23,32 +24,31 @@ asm_select:
         push %esi
         push %ebx
 
-    movl 8(%ebp), %ecx      # Copia il valore.
-    movl 12(%ebp), %esi     # Copia il puntatore dell'array.
-    movl 16(%ebp), %eax     # Copia la lunghezza dell'array.
-
-    movl $4, %edx
-    mulb %dl                # Moltiplica la lunghezza per la dimensione di un intero.
-    movl %eax, %edx         # Sposta la lunghezza dell'array dentro EDX.
-
-    xorl %eax, %eax
+    movl 8(%ebp), %eax      # Copia il valore da confrontare.
+    movl 12(%ebp), %esi     # Copia il puntatore all'array.
+    movl 16(%ebp), %ecx     # Copia la lunghezza dell'array in %ecx.
+    movl %ecx, %edx         # ed in %edx.
 
     select_loop:
-        movl (%esi, %eax), %ebx     # Prende l'n-esimo valore dell'array.
+        test %ecx, %ecx         # Se sono stati confrontati tutti i valori.
+        jz   select_default     # Allora esce dal ciclo.
+        decl %ecx               # Altrimenti decrementa il contatore.
 
-        cmpl %ebx, %ecx             # Compara il valore dell'array con il parametro passato.
-        jle select_return           # Se il parametro passato è minore salta fuori dal ciclo.
+        movl (%esi), %ebx       # Copia un valore valore dall'array.
+        addl $4, %esi           # Incrementa il puntatore all'intero successivo.
 
-        addl $4, %eax               # Aggiorna il contatore.
-
-        cmpl %edx, %eax             # Confronta il contatore con la lunghezza.
-        jl select_loop              # Se il contatore è minore continua a ciclare.
-
-        movl %edx, %eax             # Sposta la lunghezza nel registro di ritorno.
+        cmpl %ebx, %eax         # Se il valore è minore od uguale alla soglia.
+        jle  select_return      # Allora esce dal ciclo.
+        jmp  select_loop
 
     select_return:
-        movl $4, %ebx
-        divb %bl                    # Divide il valore per la dimensione di un intero.
+        movl %edx, %eax         # Copia la lunghezza dell'array.
+        incl %ecx               # Incrementa il contatore.
+        subl %ecx, %eax         # Restituisce la differenza tra i due.
+        jmp  select_epilogue
+
+    select_default:
+        movl %edx, %eax
 
     select_epilogue:
         /* Ripristino registri. */
