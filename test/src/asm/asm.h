@@ -35,6 +35,12 @@ extern int
 asm_select(int val, int arr[], int len);
 
 extern void
+telemetry_line(int arr[], char *dst, int pnts[], char *strs[]);
+
+extern void
+telemetry_last(int arr[], char *src, char *dst);
+
+extern void
 telemetry_loop(int idx, char *src, char *dst);
 
 extern int
