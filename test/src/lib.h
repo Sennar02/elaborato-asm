@@ -1,3 +1,5 @@
+#include "asm/asm.h"
+
 int
 c_strlen(const char *str)
 {
@@ -258,7 +260,7 @@ c_telemetry_loop(int idx, char *src, char *dst)
                 dst += c_strncpy(dst, str[0], 7);
                 *dst++ = ',';
 
-                dst += c_telemetry_line(val, dst);
+                dst += telemetry_line(val, dst, treshs, levels);
 
                 tst[0] = c_max(tst[0], val[0]);
                 tst[1] = c_max(tst[1], val[1]);
@@ -271,7 +273,7 @@ c_telemetry_loop(int idx, char *src, char *dst)
     }
 
     tst[3] = tst[3] / cnt;
-    c_telemetry_last(tst, s, dst);
+    telemetry_last(tst, s, dst);
 }
 
 int
