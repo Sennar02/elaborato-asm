@@ -78,39 +78,39 @@ blabla
 
 ## Funzioni
 
-Abbiamo suddiviso il programma in varie routine alle quali forniamo i parametri tramite lo stack del programma. Questo metodo richiede particolare attenzione perché lo stack viene usata anche dal sistema stesso. 
+Abbiamo suddiviso il programma in varie routine alle quali forniamo i parametri tramite lo *stack* del programma. Questo metodo richiede particolare attenzione perché lo *stack* viene usata anche dal sistema stesso.
 
-### CHIAMATA DI UNA FUNZIONE E PASSAGGIO PARAMETRI
+### Chiamata di una funzione e passaggio parametri
 
-Nel blocco chiamante di una funzione: 
+Nel blocco chiamante di una funzione:
 
-- abbiamo caricato nello stack, dopo averli inseriti negli opportuni registri, i parametri da passare alla funzione, in ordine inverso in modo da estrarli più comodamente; 
+- abbiamo caricato nello *stack*, dopo averli inseriti negli opportuni registri, i parametri da passare alla funzione, in ordine inverso così che possiamo estrarli più comodamente;
 
-- abbiamo utilizzato l’istruzione `call`, che invoca la funzione specificata. Dopo che la funzione è terminata, il valore restituito, se presente, si trova in `%eax`; 
+- abbiamo utilizzato l’istruzione `call`, che invoca la funzione specificata. Dopo che la funzione è terminata il valore restituito, se presente, si trova in `%eax`;
 
-- conclusa la funzione, abbiamo liberato lo spazio di memoria che era stato riservato ai parametri della funzione, incrementando `%esp` di 4 byte per parametro, dato che siamo in un’architettura a 32 bit. 
+- conclusa la funzione, abbiamo liberato lo spazio di memoria che era stato riservato ai parametri della funzione, incrementando `%esp` di 4 byte per parametro, dato che siamo in un’architettura a 32 bit.
 
-### INIZIO/CONCLUSIONE DI UNA FUNZIONE E RESTITUZIONE DI UN VALORE
+### Inizio/Conclusione di una funzione e restituzione di un valore
 
 Nel blocco della funzione chiamata, durante la fase iniziale:
 
-- abbiamo caricato il valore di `%ebp` nello stack, per salvare così il suo valore iniziale e ripristinarlo una volta conclusa la funzione;
+- abbiamo caricato il valore di `%ebp` nello *stack*, per salvare così il suo valore iniziale e ripristinarlo una volta conclusa la funzione;
 
-- abbiamo salvato lo stack pointer in `%ebp`. Per accedere ai parametri e alle variabili locali si utilizza `%ebp` e un offset;
+- abbiamo salvato lo *stack* pointer in `%ebp`. Per accedere ai parametri e alle variabili locali si utilizza `%ebp` e un offset;
 
-- abbiamo caricato nello stack i registri che utilizzeremo nella funzione e i cui valori vogliamo ripristinare conclusa la funzione;
+- abbiamo caricato nello *stack* i registri che utilizzeremo nella funzione e i cui valori vogliamo ripristinare conclusa la funzione;
 
-- abbiamo utilizzato `%ebp` con un certo offset per salvare i parametri della funzione negli opportuni registri. 
+- abbiamo utilizzato `%ebp` con un certo offset per salvare i parametri della funzione negli opportuni registri.
 
-Prima di concludere la funzione: 
+Prima di concludere la funzione:
 
-- abbiamo salvato nel registro `%eax`  l’eventuale valore da restituire; 
+- abbiamo salvato nel registro `%eax` l’eventuale valore da restituire;
 
-- abbiamo estratto i registri caricati all’inizio della funzione; 
+- abbiamo estratto i registri caricati all’inizio della funzione;
 
-- abbiamo estratto `%ebp` ripristinando così la sua posizione; 
+- abbiamo estratto `%ebp` ripristinando così la sua posizione;
 
-- abbiamo utilizzato l’istruzione `ret`, terminando la funzione e posizionando il programma all’istruzione successiva alla `call`. 
+- abbiamo utilizzato l’istruzione `ret`, terminando la funzione e posizionando il programma all’istruzione successiva alla `call`.
 
 ### strlen
 
@@ -118,6 +118,10 @@ Prima di concludere la funzione:
 unsigned int
 strlen(const char *str);
 ```
+
+| Parametro | Descrizione                                 |
+| :-------: | :-----------------------------------------: |
+| `str`     | Stringa della quale calcolare la lunghezza. |
 
 La funzione accetta in ingresso una stringa e ne calcola la lunghezza.
 
@@ -144,6 +148,9 @@ int
 strncmp(const char *str1, const char *str2, int num);
 ```
 
+| Parametro | Descrizione                                 |
+| :-------: | :-----------------------------------------: |
+
 La funzione accetta in ingresso due stringhe e un intero, calcola se le due stringhe sono uguali.
 
 Dichiara due caratteri inizializzati a 0 (`'\0'`) che vengono usati in un ciclo per scorrere i caratteri puntati nelle due stringhe. Se si trovano dei caratteri diversi, se si raggiunge il terminatore della prima stringa o se sono stati confrontati il numero di caratteri dato dal valore intero passato come parametro, il ciclo viene concluso. Alla fine compie una sottrazione tra i caratteri puntati alla conclusione del ciclo. Se la differenza è uguale a 0, le stringhe sono uguali.
@@ -169,6 +176,9 @@ char *
 strnrev(char *str, int num);
 ```
 
+| Parametro | Descrizione                                 |
+| :-------: | :-----------------------------------------: |
+
 La funzione accetta in ingresso una stringa e un valore intero che indica il numero di caratteri della stringa da invertire.
 
 Copia la stringa da invertire in due ulteriori stringhe e dichiara un carattere inizializzato a 0 (`'\0'`). Nella seconda stringa somma al puntatore il valore intero passato come parametro. Scorre i caratteri, scambiando quelli correnti puntati, incrementa il puntatore alla prima stringa e decrementa il puntatore alla seconda. Se il puntatore alla prima stringa è maggiore del puntatore alla seconda, conclude il ciclo. Infine restituisce i caratteri invertiti della stringa.
@@ -192,6 +202,9 @@ strnrev(char *str, int num)
 int
 strncpy(char *dst, const char *src, int num);
 ```
+
+| Parametro | Descrizione                                 |
+| :-------: | :-----------------------------------------: |
 
 La funzione accetta come parametro due stringhe, destinazione e sorgente, e un valore intero. Copia un certo numero di caratteri della sorgente nella destinazione.
 
@@ -221,6 +234,9 @@ strncpy(char *dst, const char *src, int num)
 int
 strlcpy(char *dst, const char *src, int num);
 ```
+
+| Parametro | Descrizione                                 |
+| :-------: | :-----------------------------------------: |
 
 La funzione accetta come parametro due stringhe, destinazione e sorgente, e un valore intero. Copia un certo numero di caratteri della sorgente nella destinazione e aggiunge il terminatore.
 
@@ -253,6 +269,9 @@ unsigned int
 strtoi(const char *str);
 ```
 
+| Parametro | Descrizione                                 |
+| :-------: | :-----------------------------------------: |
+
 La funzione accetta in ingresso una stringa, converte la stringa in un valore in base 10.
 
 Dichiara un valore intero a zero e scorre i caratteri puntati della stringa finché il loro codice ASCI è compreso tra quello dei valori numerici. Quindi salva nel valore intero dichiarato all'inizio il valore stesso moltiplicato per 10, somma il valore del carattere puntato e poi sottrae 48 (il valore ASCI corrispondente a 0, da cui partono le altre cifre decimali). Infine restituisce la stringa convertita.
@@ -276,6 +295,9 @@ strtoi(const char *str)
 char *
 itostr(unsigned int num, char *str);
 ```
+
+| Parametro | Descrizione                                 |
+| :-------: | :-----------------------------------------: |
 
 La funzione accetta in ingresso un numero intero in base 10 e una stringa, converte il numero intero in una stringa.
 
@@ -308,6 +330,9 @@ itostr(unsigned int num, char *str)
 char*
 strsep(char **ptr, char sep)
 ```
+
+| Parametro | Descrizione                                 |
+| :-------: | :-----------------------------------------: |
 
 La funzione accetta in ingresso una stringa e un carattere separatore, restituisce il pezzo di stringa precedente al separatore.
 
@@ -343,6 +368,9 @@ int
 strnsep(char *arr[], int num, char **ptr, char sep)
 ```
 
+| Parametro | Descrizione                                 |
+| :-------: | :-----------------------------------------: |
+
 La funzione accetta in ingresso un array di stringhe, la sua lunghezza, una stringa e un carattere separatore. Restituisce il numero di volte in cui è avvenuta una separazione della stringa.
 
 Inizializza 2 variabili intere a 0 e prosegue con un ciclo che finisce quando la seconda variabile è uguale alla lunghezza dell'array. Dentro il ciclo salva nella posizione puntata nell'array il risultato della funzione `strsep`, se è diverso da 0 incrementa il conteggio delle separazioni (prima variabile intera), altrimenti prosegue col ciclo. Concluso il ciclo restituisce il conteggio delle separazioni.
@@ -367,6 +395,9 @@ strnsep(char *arr[], int num, char **ptr, char sep)
 int
 arrfind(const char *arr[], int len, const char *key);
 ```
+
+| Parametro | Descrizione                                 |
+| :-------: | :-----------------------------------------: |
 
 La funzione accetta in ingresso un array di stringhe, la sua lunghezza e una stringa, indica se nell'array è presente la stringa passata.
 
@@ -393,6 +424,9 @@ arrfind(const char *arr[], int len, const char *key)
 int
 select(int val, int arr[], int len);
 ```
+
+| Parametro | Descrizione                                 |
+| :-------: | :-----------------------------------------: |
 
 La funzione accetta in ingresso un valore intero, un array d'interi e la sua lunghezza, indica se il valore appartiene ad un certo intervallo.
 
