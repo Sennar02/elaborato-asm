@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "file.h"
-#include "asm/asm.h"
-// #include "lib.h"
+#include "../../src/asm/library.h"
+#include "../../src/telemetry.h"
 
 int
 main(int argc, const char *argv[])

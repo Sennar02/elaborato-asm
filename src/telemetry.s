@@ -22,7 +22,7 @@ pilot_17_str: .ascii "Kimi Raikkonen\0"
 pilot_18_str: .ascii "Esteban Ocon\0"
 pilot_19_str: .ascii "Valtteri Bottas\0"
 
-invalid_pilot_str: .ascii "Invalid\0"
+invalid_pilot_str: .ascii "Invalid\n\0"
 
 level_00_str: .ascii "LOW\0"
 level_01_str: .ascii "MEDIUM\0"
@@ -156,7 +156,7 @@ telemetry:
     telem_invalid:
         leal invalid_pilot_str, %esi
 
-        push $8
+        push $9
         push %esi
         push 12(%ebp)
         call asm_strlcpy
