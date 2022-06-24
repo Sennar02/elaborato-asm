@@ -43,7 +43,6 @@ asm_select:
 
     select_return:
         movl %edx, %eax         # Copia la lunghezza dell'array.
-        incl %ecx               # Incrementa il contatore.
         subl %ecx, %eax         # Restituisce la differenza tra i due.
         jmp  select_epilogue
 
