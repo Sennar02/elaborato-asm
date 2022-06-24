@@ -24,6 +24,17 @@ pilot_19_str: .ascii "Valtteri Bottas\0"
 
 invalid_pilot_str: .ascii "Invalid\0"
 
+level_00_str: .ascii "LOW\0"
+level_01_str: .ascii "MEDIUM\0"
+level_02_str: .ascii "HIGH\0"
+
+point_00_num: .long 5000
+point_01_num: .long 10000
+point_10_num: .long 90
+point_11_num: .long 110
+point_20_num: .long 100
+point_21_num: .long 250
+
 .text
 
 .global telemetry
@@ -35,7 +46,7 @@ telemetry:
         push %ebp
         movl %esp, %ebp
         /* Allocazione variabili. */
-        subl $80, %esp
+        subl $116, %esp
         /* Salvataggio registri. */
         push %esi
         push %ebx
@@ -82,6 +93,26 @@ telemetry:
     leal pilot_00_str, %esi
     movl %esi, -80(%ebp)
 
+    leal level_02_str, %esi
+    movl %esi, -84(%ebp)
+    leal level_01_str, %esi
+    movl %esi, -88(%ebp)
+    leal level_00_str, %esi
+    movl %esi, -92(%ebp)
+
+    movl point_21_num, %esi
+    movl %esi, -96(%ebp)
+    movl point_20_num, %esi
+    movl %esi, -100(%ebp)
+    movl point_11_num, %esi
+    movl %esi, -104(%ebp)
+    movl point_10_num, %esi
+    movl %esi, -108(%ebp)
+    movl point_01_num, %esi
+    movl %esi, -112(%ebp)
+    movl point_00_num, %esi
+    movl %esi, -116(%ebp)
+
     /* Copia l'indirizzo della stringa sorgente. */
     movl %ebp, %esi
     addl $8, %esi
@@ -106,18 +137,27 @@ telemetry:
     cmpl $0, %eax
     jl   telem_invalid
 
+    movl %ebp, %ebx
+    subl $92, %ebx
+    movl %ebp, %ecx
+    subl $116, %ecx
+
     /* Chiama la funzione loop. */
+    push %ebx
+    push %ecx
     push 12(%ebp)
     push 8(%ebp)
     push %eax
     call telemetry_loop
-    addl $12, %esp
+    addl $20, %esp
 
     jmp  telem_return
 
     telem_invalid:
-        push $8
         leal invalid_pilot_str, %esi
+
+        push $8
+        push %esi
         push 12(%ebp)
         call asm_strlcpy
         addl $12, %esp

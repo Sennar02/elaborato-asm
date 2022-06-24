@@ -10,135 +10,206 @@ telemetry_loop:
         push %ebp
         movl %esp, %ebp
         /* Allocazione variabili. */
-        subl $68, %esp
+        subl $60, %esp
         /* Salvataggio registri. */
         push %esi
         push %edi
         push %ebx
 
-    xorl %ecx, %ecx
+   movl 16(%ebp), %edi  # Copia la stringa di destinazione.
+   movl %ebp, %esi      # Copia l'indirizzo di base.
+   addl $12, %esi       # Calcola l'indirizzo della stringa sorgente.
 
-    movl %ebp, %esi
-    addl $12, %esi
-    mov (%esi), -56(%ebp)
+   movl (%esi), %eax
+   movl %eax, -4(%ebp)
 
-    tloop_loop:
-        push %ecx
-        /* Separa riga per riga. */
-        push $10
-        push %esi
-        call asm_strsep
-        addl $8, %esp
-        /* Se la riga non è null. */
-        test %eax, %eax
-        jz   tloop_index
-        /* Ottiene l'array e l'indirizzo della riga. */
-        leal %eax, %edi
-        movl %ebp, %ebx
-        subl $20, %ebx
-        /* Separa un'intera riga per la virgola. */
-        push $44
-        push %edi
-        push $5
-        push %ebx
-        call asm_strnsep
-        addl $16, %esp
+   xorl %ebx, %ebx
+   movl $0, -60(%ebp)
+   movl $0, -56(%ebp)
+   movl $0, -52(%ebp)
+   movl $0, -48(%ebp)
 
-        tloop_index:
-            /* Traduce ad intero l'indice. */
-            push -16(%ebp)
-            call asm_strtoi
-            addl $4, %esp
-            /* Se è uguale all'indice da cercare. */
-            cmpl %eax, 8(%ebp)
-            jne  tloop_finish
+   tloop_loop:
+      movl (%esi), %eax
+      test %eax, %eax
+      jz  tloop_finish
 
-            /* Traduce e riordina la prima stringa. */
-            push -8(%ebp)
-            call asm_strtoi
-            movl %eax, -36(%ebp)
-            /* Traduce e riordina la seconda stringa. */
-            push -4(%ebp)
-            call asm_strtoi
-            movl %eax, -32(%ebp)
-            /* Traduce e riordina la terza stringa. */
-            push -12(%ebp)
-            call asm_strtoi
-            movl %eax, -28(%ebp)
-            /* Copia il tempo. */
-            push $7
-            push -20(%ebp)
-            push 16(%ebp)
-            call asm_strncpy
-            addl $12, %esp
-            /* Sposta il puntatore esattamente di quanti
-               caratteri ha copiato nella stringa. */
-            addl %eax, 16(%ebp)
-            /* Inserisce la virgola dopo il tempo. */
-            movl 16(%ebp), %edi
-            movb $44, (%edi)
-            /* Ottiene l'indirizzo dell'array riordinato. */
-            movl %ebp, %edi
-            subl $36, %edi
-            /* Chiama la funzione telemetry line. */
-            push 16(%ebp)
-            push %edi
-            //! call telemetry_line
-            addl $8, %esp
-            /* Sposta il puntatore esattamente di quanti
-               caratteri ha copiato nella stringa. */
-            addl %eax, 16(%ebp)
-            /* Calcola il massimo tra il valore memorizzato
-               e quello appena tradotto. */
-            push -36(%ebp)
-            push -52(%ebp)
-            call asm_max
-            addl $8, %esp
-            movl %eax, -52(%ebp)
-            /* Calcola il massimo tra il valore memorizzato
-               e quello appena tradotto. */
-            push -32(%ebp)
-            push -48(%ebp)
-            call asm_max
-            addl $8, %esp
-            movl %eax, -48(%ebp)
-            /* Calcola il massimo tra il valore memorizzato
-               e quello appena tradotto. */
-            push -28(%ebp)
-            push -44(%ebp)
-            call asm_max
-            addl $8, %esp
-            movl %eax, -44(%ebp)
-            /* Calcola il massimo tra il valore memorizzato
-               e quello appena tradotto. */
-            push -28(%ebp)
-            push -40(%ebp)
-            call asm_max
-            addl $8, %esp
-            movl %eax, -40(%ebp)
+      /* Separa riga per riga. */
+      push $10             # Carica il carattere '\n'.
+      push %esi            # Carica l'indirizzo della stringa sorgente.
+      call asm_strsep      # Separa la stringa.
+      addl $8, %esp        # Scarica i parametri dallo stack.
 
-            pop %ecx
-            incl %ecx
+      test %eax, %eax      # Se la stringa è nulla.
+      jz   tloop_index     # allora esce dal ciclo.
 
-    tloop_finish:
-        xorl %edx, %edx
-        movl -40(%ebp), %eax
-        divl %ecx
-        movl %eax, -40(%ebp)
+      movl %eax, -8(%ebp)  # Assegna un indirizzo al risultato.
 
-        push 16(%ebp)
-        push -56(%ebp)
-        push -52(%ebp)
-        //! call telemetry_last
-        addl $12, %esp
+      movl %ebp, %eax      # Copia l'indirizzo di base.
+      subl $8, %eax        # Calcola l'indirizzo della riga.
+      movl %ebp, %ecx      # Copia l'indirizzo di base.
+      subl $28, %ecx       # Calcola l'indirizzo dell'array di stringhe.
 
-    tloop_epilogue:
-        /* Ripristino registri. */
-        push %ebx
-        push %edi
-        push %esi
-        /* Deallocazione variabili. */
-        movl %ebp, %esp
-        /* Ripristino base ptr. */
-        pop %ebp
-        ret
+      /* Separa un'intera riga una
+         virgola alla volta. */
+      push $44             # Carica il carattere ','.
+      push %eax            # Carica l'indirizzo della riga.
+      push $5              # Carica la lunghezza dell'array.
+      push %ecx            # Carica l'indirizzo dell'array.
+      call asm_strnsep     # Separa tutta la riga.
+      addl $16, %esp       # Scarica i parametri dallo stack.
+
+      tloop_index:
+         cmpl $0, -24(%ebp)
+         je   tloop_loop
+
+         push -24(%ebp)          # Carica la stringa corrispondente all'ID.
+         call asm_strtoi         # Traduce l'ID ad intero.
+         addl $4, %esp           # Scarica i parametri dallo stack.
+
+         cmpl %eax, 8(%ebp)      # Se l'indice è diverso al parametro.
+         jne  tloop_loop         # allora passa all'iterazione successiva.
+
+         incl %ebx               # Incrementa il contatore.
+
+         // -4  &src
+         // -8  cpy
+
+         // -12 str[4]
+         // -16 str[3]
+         // -20 str[2]
+         // -24 str[1]
+         // -28 str[0]
+
+         // -32 val[3]
+         // -36 val[2]
+         // -40 val[1]
+         // -44 val[0]
+
+         // -48 acc[3]
+         // -52 acc[2]
+         // -56 acc[1]
+         // -60 acc[0]
+
+         /* Traduce ad intero str[3] e mette
+            il risultato in val[0]. */
+         push -16(%ebp)          # Carica str[3].
+         call asm_strtoi         # Lo traduce ad intero.
+         addl $4, %esp           # Scarica il parametro dallo stack.
+
+         movl %eax, -44(%ebp)    # Copia il risultato in val[0].
+
+         /* Traduce ad intero str[4] e mette
+            il risultato in val[1]. */
+         push -12(%ebp)           # Carica str[4].
+         call asm_strtoi         # Lo traduce ad intero.
+         addl $4, %esp           # Scarica il parametro dallo stack.
+
+         movl %eax, -40(%ebp)    # Copia il risultato in val[1].
+
+         /* Traduce ad intero str[2] e mette
+            il risultato in val[2]. */
+         push -20(%ebp)          # Carica str[2].
+         call asm_strtoi         # Lo traduce ad intero.
+         addl $4, %esp           # Scarica il parametro dallo stack.
+
+         movl %eax, -36(%ebp)    # Copia il risultato in val[2].
+
+         /* Calcola la lunghezza della stringa. */
+         push -28(%ebp)          # Carica la stringa in questione.
+         call asm_strlen         # Ne calcola la lunghezza.
+         addl $4, %esp           # Scarica il paramaetro dallo stack.
+
+         /* Ricopia l'istante di tempo nella stringa
+            di output e ne sposta il puntatore. */
+         push %eax               # Carica la quantità da copiare.
+         push -28(%ebp)          # Carica la stringa da copiare.
+         push %edi               # Carica la stringa nella quale scrivere.
+         call asm_strncpy        # Copia la stringa.
+         addl $12, %esp          # Scarica i parametri dallo stack.
+
+         addl %eax, %edi         # Sposta il puntatore in base al risultato.
+
+         /* Scrive una virgola all'interno della stringa. */
+         movb $44, (%edi)        # Copia il carattere ',' nella stringa.
+         incl %edi               # Sposta il puntatore al carattere successivo.
+
+         movl %ebp, %eax         # Copia l'indirizzo di base.
+         subl $44, %eax          # Calcola l'indirizzo dell'array riordinato.
+
+         /* Gestisce la singola riga. */
+         push 24(%ebp)           # Carica l'array di stringhe.
+         push 20(%ebp)           # Carica l'array di soglie.
+         push %edi               # Carica la stringa nella quale scrivere.
+         push %eax               # Carica l'indirizzo dell'array riordinato.
+         call telemetry_line     # Delega la gestione della riga.
+         addl $16, %esp          # Scarica i parametri dallo stack.
+
+         addl %eax, %edi         # Sposta il puntatore in base al risultato.
+
+         /* Calcola il massimo tra il nuovo valore
+            ed il precedente. */
+         push -44(%ebp)
+         push -60(%ebp)
+         call asm_max
+         addl $8, %esp
+
+         movl %eax, -60(%ebp)
+
+         /* Calcola il massimo tra il nuovo valore
+            ed il precedente. */
+         push -40(%ebp)
+         push -56(%ebp)
+         call asm_max
+         addl $8, %esp
+
+         movl %eax, -56(%ebp)
+
+         /* Calcola il massimo tra il nuovo valore
+            ed il precedente. */
+         push -36(%ebp)
+         push -52(%ebp)
+         call asm_max
+         addl $8, %esp
+
+         movl %eax, -52(%ebp)
+
+         movl -36(%ebp), %eax
+         movl -48(%ebp), %ecx
+         addl %eax, -48(%ebp)
+
+         jmp tloop_loop
+
+   tloop_finish:
+      test %ebx, %ebx
+      jnz  tloop_divide
+
+      movl $0, -48(%ebp)
+      jmp  tloop_last
+
+      tloop_divide:
+         xorl %edx, %edx
+         movl -48(%ebp), %eax
+         divl %ebx
+         movl %eax, -48(%ebp)
+
+      tloop_last:
+         movl %ebp, %eax
+         subl $60, %eax
+
+         push %edi
+         push -4(%ebp)
+         push %eax
+         call telemetry_last
+         addl $12, %esp
+
+   tloop_epilogue:
+      /* Ripristino registri. */
+      push %ebx
+      push %edi
+      push %esi
+      /* Deallocazione variabili. */
+      movl %ebp, %esp
+      /* Ripristino base ptr. */
+      pop %ebp
+      ret
