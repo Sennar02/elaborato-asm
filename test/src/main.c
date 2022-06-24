@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "file.h"
+#include "lib.h"
+#include "telemety.h"
 #include "../../src/asm/library.h"
 #include "../../src/telemetry.h"
 
@@ -20,14 +22,15 @@ main(int argc, const char *argv[])
 
     if (src != 0 && dst != 0) {
         char *str = (char*) file_read(src);
-        char *out = malloc( strlen(str) );
+        int len = strlen(str);
+        char *out = calloc(len + 1, 1);
 
-        printf("\x1b[33mSource\x1b[0m:\n\n%s\n", str);
+        // printf("\x1b[33mSource\x1b[0m:\n\n%s\n", str);
 
         if (str != 0 && out != 0) {
-            telemetry(str, out);
+            c_telemetry(str, out);
 
-            printf("\x1b[33mResult\x1b[0m:\n\n%s\n", out);
+            // printf("\x1b[33mResult\x1b[0m:\n\n%s\n", out);
             file_write(dst, out);
         }
     }
