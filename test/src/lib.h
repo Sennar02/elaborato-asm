@@ -198,15 +198,15 @@ c_sum(int val, int sum)
 }
 
 int
-c_telemetry_line(int arr[], char *dst)
+c_telemetry_line(int arr[], char *dst, int pnts[], const char *strs[])
 {
     char *d = dst;
     const char *out = 0;
     int idx = 0, siz = 0;
 
     for (int i = 0; i < 3; ++i) {
-        idx = c_select(arr[i], treshs + i * 2, 2);
-        out = levels[idx];
+        idx = c_select(arr[i], pnts + i * 2, 2);
+        out = strs[idx];
         siz = c_strlen(out);
         dst += c_strncpy(dst, out, siz);
 
@@ -238,7 +238,7 @@ c_telemetry_last(int arr[], char *src, char *dst)
 }
 
 void
-c_telemetry_loop(int idx, char *src, char *dst)
+c_telemetry_loop(int idx, char *src, char *dst, int pnts[], const char *strs[])
 {
     char *s = src, *lin = 0, *str[5] = {0};
     int cnt = 0, pid = 0, val[4] = {0}, tst[4] = {0};
@@ -257,10 +257,10 @@ c_telemetry_loop(int idx, char *src, char *dst)
                 val[1] = c_strtoi(str[4]);
                 val[2] = c_strtoi(str[2]);
 
-                dst += c_strncpy(dst, str[0], 7);
+                dst += c_strncpy(dst, str[0], c_strlen(str[0]));
                 *dst++ = ',';
 
-                dst += telemetry_line(val, dst, treshs, levels);
+                dst += c_telemetry_line(val, dst, pnts, strs);
 
                 tst[0] = c_max(tst[0], val[0]);
                 tst[1] = c_max(tst[1], val[1]);
@@ -273,7 +273,7 @@ c_telemetry_loop(int idx, char *src, char *dst)
     }
 
     tst[3] = tst[3] / cnt;
-    telemetry_last(tst, s, dst);
+    c_telemetry_last(tst, s, dst);
 }
 
 int
@@ -283,7 +283,7 @@ c_telemetry(char *src, char *dst)
     int idx = c_arrfind(names, 20, lin);
 
     if (idx >= 0)
-        c_telemetry_loop(idx, src, dst);
+        c_telemetry_loop(idx, src, dst, treshs, levels);
     else
         c_strlcpy(dst, "Invalid", 8);
 

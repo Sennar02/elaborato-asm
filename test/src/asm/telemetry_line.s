@@ -110,7 +110,7 @@ telemetry_line:
         pop %edi
         pop %esi
         /* Deallocazione variabili. */
-        movl %ebp, %esp
+        // movl %ebp, %esp
         /* Ripristino base ptr. */
         pop %ebp
         ret

@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "file.h"
-#include "lib.h"
 #include "asm/asm.h"
+// #include "lib.h"
 
 int
 main(int argc, const char *argv[])
@@ -25,7 +25,7 @@ main(int argc, const char *argv[])
         printf("\x1b[33mSource\x1b[0m:\n\n%s\n", str);
 
         if (str != 0 && out != 0) {
-            c_telemetry(str, out);
+            telemetry(str, out);
 
             printf("\x1b[33mResult\x1b[0m:\n\n%s\n", out);
             file_write(dst, out);
