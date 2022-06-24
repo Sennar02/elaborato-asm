@@ -1,20 +1,32 @@
 cc := gcc
-cflags := -m32 -g
+aflags := -m32
+lflags := -m32 -no-pie
 
 trg := bin/program.out
-src := $(shell ls src/*.s)
-tmp := $(subst src/,obj/,$(src))
-obj := $(subst .s,.o,$(tmp))
+src := $(shell ls src/*.s src/*/*.s src/*.c)
+tmp1 := $(subst src/,obj/,$(src))
+tmp2 := $(subst .c,.o,$(tmp1))
+obj := $(subst .s,.o,$(tmp2))
 
 all: $(trg)
 
 $(trg): $(obj)
 	@mkdir -p bin/
-	$(cc) $(cflags) $^ -o $@
+	$(cc) $(lflags) $^ -o $@
 
 obj/%.o: src/%.s
+	@mkdir -p obj/asm
+	$(cc) $(aflags) -c $< -o $@
+
+obj/%.o: src/%.c
 	@mkdir -p obj/
-	$(cc) $(cflags) -c $< -o $@
+	$(cc) $(aflags) -c $< -o $@
 
 clean:
-	rm -rf $(obj) $(trg)
+	rm -rf obj/*.o obj/*/*.o bin/*.out
+
+test:
+	cp src/*.s test/src
+	cd test/
+	make && clear
+	cd ..
