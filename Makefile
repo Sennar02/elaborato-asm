@@ -15,7 +15,7 @@ $(trg): $(obj)
 	$(cc) $(lflags) $^ -o $@
 
 obj/%.o: src/%.s
-	@mkdir -p obj/
+	@mkdir -p obj/asm
 	$(cc) $(aflags) -c $< -o $@
 
 obj/%.o: src/%.c
@@ -23,7 +23,7 @@ obj/%.o: src/%.c
 	$(cc) $(aflags) -c $< -o $@
 
 clean:
-	rm -rf obj/*.o bin/*.out
+	rm -rf obj/*.o obj/*/*.o bin/*.out
 
 test:
 	cp src/*.s test/src
