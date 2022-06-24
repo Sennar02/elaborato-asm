@@ -6,15 +6,10 @@
  *
  * @param arr Array di interi.
  * @param dst Puntatore alla destinazione.
+ * @param pnts Array contenente le soglie dei dati.
+ * @param strs Array di stringhe indicanti la soglia.
  * @return Il numero di caratteri aggiunti alla destinazione.
  */
-
-.section .data
-    # Puntatore all'array this.
-    ths: .long 0
-
-    # Puntatore all'array outputs.
-    out: .long 0
 
 .text
 
@@ -34,11 +29,6 @@ telemetry_line:
 
     movl 8(%ebp), %esi      # Copia il puntatore all'array.
     movl 12(%ebp), %edi     # Copia la stringa destinazione.
-    movl 16(%ebp), %ecx     # Copia il puntatore a ths.
-    movl %ecx, ths          # Carica il puntatore a ths nell'etichetta ths.
-
-    movl 20(%ebp), %ecx     # Copia il puntatore a outputs.
-    movl %ecx, out          # Carica il puntatore a outputs nell'etichetta out.
 
     movl %edi, %ebx         # Salva il puntatore alla stringa destinazione.
 
@@ -46,26 +36,26 @@ telemetry_line:
 
     telemetry_line_loop:
         /* Calcola il valore puntato da ths. */
-        movl ths, %edx
-        push %ecx           # Salva il contatore per recuperarlo successivamente.
-        movl %ecx, %eax     # Prepara il contatore per la moltiplicazione.
+        movl 16(%ebp), %edx     # Carica il puntatore a ths.
+        push %ecx               # Salva il contatore per recuperarlo successivamente.
+        movl %ecx, %eax         # Prepara il contatore per la moltiplicazione.
         movl $8, %ecx
-        mulb %cl            # Moltiplica il contatore per 8.
-        addl %eax, %edx     # Somma il risultato a ths.
+        mulb %cl                # Moltiplica il contatore per 8.
+        addl %eax, %edx         # Somma il risultato a ths.
 
         /* Chiama la funzione select. */
-        push %ecx               # Carica il valore 2.
         push %edx               # Carica il puntatore a ths.
         movl (%esi), %eax       # Estrae l'elemento dall'array.
         push %eax               # Carica l'elemento estratto.
         call asm_select         # Chiama la funzione asm_select.
-        addl $12, %esp          # Scarica i parametri dallo stack.
+        addl $8, %esp           # Scarica i parametri dallo stack.
         addl $4, %esi           # Aggiorna l'indice dell'array.
 
         /* Estrae la stringa da aggiungere a dst. */
-        movl $4, %edx
-        mulb %dl                # Moltiplica il selettore per 4.
-        addl out, %eax          # Somma al risultato il puntatore ad out.
+        movl $4, %ecx
+        xorl %edx, %edx
+        mull %ecx               # Moltiplica il selettore per 4.
+        addl 20(%ebp), %eax     # Somma al risultato il puntatore ad out.
         movl (%eax), %edx       # Carica da memoria la stringa.
 
         /* Calcola la dimensione della stringa. */
@@ -110,7 +100,7 @@ telemetry_line:
         pop %edi
         pop %esi
         /* Deallocazione variabili. */
-        // movl %ebp, %esp
+        movl %ebp, %esp
         /* Ripristino base ptr. */
         pop %ebp
         ret
