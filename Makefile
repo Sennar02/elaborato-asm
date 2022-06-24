@@ -3,7 +3,7 @@ aflags := -m32 -g
 lflags := -m32 -no-pie
 
 trg := bin/program.out
-src := $(shell ls src/*.s src/*.c)
+src := $(shell ls src/*.s src/*/*.s src/*.c)
 tmp1 := $(subst src/,obj/,$(src))
 tmp2 := $(subst .c,.o,$(tmp1))
 obj := $(subst .s,.o,$(tmp2))
