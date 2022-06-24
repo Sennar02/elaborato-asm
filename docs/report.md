@@ -442,3 +442,148 @@ select(int val, int arr[], int len)
     return len;
 }
 ```
+### telemetry_line
+
+```c
+int
+telemetry_line(int arr[], char *dst);
+```
+
+La funzione accetta in ingresso i dati del pilota e una stringa destinazione. Assegna ai dati una tra le stringhe `"LOW"`, `"MEDIUM"` e `"HIGH"` e le salva nella destinazione.
+
+Copia la stringa destinazione in un'altra variabile. In un ciclo di 3 iterazioni (la quantità di valori dell'array), salva la targhetta apposita, individuata attraverso la funzione `select()`. Ottiene quindi la lunghezza della stringa e per mezzo di `strncpy()` aggiunge il risultato alla destinazione. Poi, se non si è nell'ultima iterazione aggiunge alla destinazione una virgola, altrimenti aggiunge l'interruzione di riga. Restituisce quindi la differenza tra i puntatori alla destinazione e alla stringa copia.
+
+```c
+int
+telemetry_line(int arr[], char *dst)
+{
+    char *d = dst;
+    const char *out = 0;
+    int idx = 0, siz = 0;
+
+    for (int i = 0; i < 3; ++i) {
+        idx = c_select(arr[i], treshs + i * 2, 2);
+        out = levels[idx];
+        siz = c_strlen(out);
+        dst += c_strncpy(dst, out, siz);
+
+        if (i != 2)
+            *dst++ = ',';
+        else
+            *dst++ = '\n';
+    }
+
+    return dst - d;
+}
+```
+
+### telemetry_last
+
+```c
+void
+telemetry_last(int arr[], char *src, char *dst);
+```
+
+La funzione accetta in ingresso un'array d'interi, una stringa sorgente e una destinazione. Crea l'ultima riga dei dati del pilota.
+
+In un ciclo da 4 iterazioni (numero di elementi nell'array) converte ogni elemento in stringa con la funzione `itostr()`, salva la lunghezza della stringa ottenuta e poi la copia nella destinazione. Inoltre, se non è avvenuta l'ultima iterazione aggiunge una virgola, altrimenti aggiunge l'interruzione di riga.
+
+```c
+void
+telemetry_last(int arr[], char *src, char *dst)
+{
+    int siz = 0;
+
+    for (int i = 0; i < 4; ++i) {
+        c_itostr(arr[i], src);
+
+        siz = c_strlen(src);
+        dst += c_strncpy(dst, src, siz);
+
+        if (i != 3)
+            *dst++ = ',';
+        else
+            *dst++ = '\n';
+    }
+}
+```
+
+### telemetry_loop
+
+```c
+void
+telemetry_loop(int idx, char *src, char *dst);
+```
+
+La funzione accetta in ingresso l'indice del pilota, una stringa sorgente e una destinazione. Manipola i dati appartenenti al pilota e li salva nella destinazione.
+
+Finché non ha raggiunto la fine della sorgente, svolge le seguenti operazioni: copia le stringhe una riga alla volta, se la stringa non è vuota salva in un array di stringhe (`str[5]`) le sue parti separate da una virgola; se la seconda stringa di `str[]` non è vuota, la converte in intero; se il numero ottenuto è uguale all'indice del pilota da analizzare, salva in un array d'interi (`val[4]`) i valori `str[2] - str[4]`; ricopia il primo elemento di `val[]` nella destinazione, aggiunge una virgola e poi con la funzione `telemetry_line()` sostituisce gli altri elementi di `val[]` con apposite stringhe, in base alla posizione e al valore. Salva in un altro array d'interi (`tst[4]`) i valori massimi dei dati del pilota, poi incrementa un contatore.  
+Concluso il ciclo, divide l'ultimo valore di `tst[]` per il contatore, ottenendo così una media, e infine utilizza l'array per la funzione `telemetry_last()`.
+
+```c
+void
+telemetry_loop(int idx, char *src, char *dst)
+{
+    char *s = src, *lin = 0, *str[5] = {0};
+    int cnt = 0, pid = 0, val[4] = {0}, tst[4] = {0};
+
+    for (cnt = 0; src != 0;) {
+        lin = c_strsep(&src, '\n');
+
+        if (lin != 0)
+            c_strnsep(str, 5, &lin, ',');
+
+        if (str[1] != 0) {
+            pid = c_strtoi(str[1]);
+
+            if (pid == idx) {
+                val[0] = c_strtoi(str[3]);
+                val[1] = c_strtoi(str[4]);
+                val[2] = c_strtoi(str[2]);
+
+                dst += c_strncpy(dst, str[0], 7);
+                *dst++ = ',';
+
+                dst += telemetry_line(val, dst, treshs, levels);
+
+                tst[0] = c_max(tst[0], val[0]);
+                tst[1] = c_max(tst[1], val[1]);
+                tst[2] = c_max(tst[2], val[2]);
+                tst[3] = c_sum(tst[3], val[2]);
+
+                cnt += 1;
+            }
+        }
+    }
+
+    tst[3] = tst[3] / cnt;
+    telemetry_last(tst, s, dst);
+}
+```
+
+### telemetry
+
+```c
+int
+telemetry(char *src, char *dst);
+```
+
+La funzione accetta in ingresso una stringa sorgente e una destinazione.
+
+Separa e salva la prima riga della sorgente e la cerca nell'array `names`, che contiene il nome dei possibili piloti. Se trova una corrispondenza, salva la sua posizione e procede con `telemetry_loop`, altrimenti salva la stringa `"Invalid"` nella destinazione.
+
+```c
+int
+telemetry(char *src, char *dst)
+{
+    char *lin = c_strsep(&src, '\n');
+    int idx = c_arrfind(names, 20, lin);
+
+    if (idx >= 0)
+        c_telemetry_loop(idx, src, dst);
+    else
+        c_strlcpy(dst, "Invalid", 8);
+
+    return 0;
+}
+```
