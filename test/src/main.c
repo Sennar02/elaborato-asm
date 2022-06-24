@@ -38,22 +38,3 @@ main(int argc, const char *argv[])
     free(src), free(dst);
     return 0;
 }
-
-// int
-// main(int argc, const char *argv[])
-// {
-//     int fails[7] = {0};
-
-//     int res = test(fails, (test_t[]) {
-//             test_strncpy,
-//             test_strlcpy,
-//             test_strtoi,
-//             test_arrfind,
-//             test_select
-//         }, 5);
-
-//     for (int i = 0; i < res; ++i)
-//         printf("E: %i\n", fails[i]);
-
-//     return 0;
-// }

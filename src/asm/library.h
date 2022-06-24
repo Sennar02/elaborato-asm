@@ -1,5 +1,5 @@
-#ifndef ASM_H
-#define ASM_H
+#ifndef LIBRARY_H
+#define LIBRARY_H
 
 extern int
 asm_strlen(const char *str);
@@ -46,4 +46,4 @@ telemetry_loop(int idx, char *src, char *dst);
 extern int
 telemetry(char *src, char *dst);
 
-#endif /* ASM_H */
+#endif /* LIBRARY_H */
