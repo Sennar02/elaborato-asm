@@ -44,11 +44,13 @@ telemetry_line:
         addl %eax, %edx         # Somma il risultato a ths.
 
         /* Chiama la funzione select. */
+        movl $2, %ecx
+        push %ecx               # Carica il valore 2.
         push %edx               # Carica il puntatore a ths.
         movl (%esi), %eax       # Estrae l'elemento dall'array.
         push %eax               # Carica l'elemento estratto.
         call asm_select         # Chiama la funzione asm_select.
-        addl $8, %esp           # Scarica i parametri dallo stack.
+        addl $12, %esp          # Scarica i parametri dallo stack.
         addl $4, %esi           # Aggiorna l'indice dell'array.
 
         /* Estrae la stringa da aggiungere a dst. */
