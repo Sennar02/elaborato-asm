@@ -1,5 +1,5 @@
 cc := gcc
-aflags := -m32 -g
+aflags := -m32
 lflags := -m32 -no-pie
 
 trg := bin/program.out
