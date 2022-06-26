@@ -1,88 +1,101 @@
 # Sistema di telemetria F1
 
-Abbiamo sviluppato un programma in linguaggio *Assembly* sintassi **AT&T** che simula il sistema di telemetria del videogame F1.
+Abbiamo sviluppato un programma in linguaggio *Assembly x86* con sintassi **AT&T**, che simula il sistema di telemetria del videogame F1.
 
 ## Traccia
 
-Il sistema prende in input per tutti i piloti ad ogni istante di tempo i dati grezzi di:
+Il sistema legge un file la cui prima riga è il nome di un pilota, mentre le successive sono precedute dall'istante di tempo e dall'identificatore del pilota a cui sono associate e contengono:
 
-- **giri motore** (*rpm*);
-- **temperatura motore** ;
-- **velocità** .
+- giri al minuto del motore
+- temperatura del motore
+- velocità istantanea del veicolo.
 
-### Parametri
+Tutte queste informazioni sono nel formato:
 
-I parametri vengono passati nel seguente ordine separati da una virgola `','`
+> ```
+> istante, identif., velocità, giri, temperatura
+> ```
 
-```csv
-tempo, id_pilota, velocità, rpm, temperatura
-```
+Se il pilota viene riconosciuto, dopo aver letto, interpretato ed elaborato le informazioni, il sistema produce un file in cui tutte le informazioni riguardano esclusivamente lui, altrimenti scrive `"Invalid"` all'interno dello stesso e termina.
 
-dove il campo `id_pilota` rappresenta un valore numerico, indice univoco del pilota.
+Il riconoscimento avviene cercando il nome all'interno di un contenitore, se viene trovato ne viene utilizzato l'identificatore per interpretare le righe sottostanti.
 
-I parametri restituiti vengono ordinati nella seguente maniera
+Tutte le righe prodotte seguono il formato:
 
-```csv
-tempo, livello rpm, livello temperatura, livello velocità
-```
+> ```csv
+> istante, liv. giri, liv. temperatura, liv. velocità
+> ```
 
-dove i tre livelli assumono in base a delle soglie uno dei seguenti valori: `"LOW"`, `"MEDIUM"`, `"HIGH"`.
+Tranne l'ultima che contiene i valori massimi di queste statistiche e in più la media (intera) della velocità istantanea, più precisamente:
 
-### Obiettivo
+> ```
+> max. giri, max. temperatura, max. velocità, med. velocità
+> ```
 
-Il programma in *Assembly* prende la prima riga contenente il nome dell'utente, in caso esso corrisponda ad un **id** presente in tabella vengono restituiti tutti i dati relativi a quel pilota in base alle soglie, nello specifico:
+I livelli che possono assumere le varie informazioni sono riportati nella tabella:
 
-| **Parametro**         | `"LOW"`       | `"MEDIUM"`           | `"HIGH"`      |
-| :-------------------: | :-----------: | :------------------: | :-----------: |
-| **Giri motore (rpm)** | *rpm ≤ 500*   | *5000 < rpm ≤ 10000* | *rpm > 110*   |
-| **Temperatura**       | *temp ≤ 90*   | *90 < temp ≤ 110*    | *temp > 110*  |
-| **Velocità**          | *speed ≤ 110* | *100 < speed ≤ 250*  | *speed > 250* |
-
-Inoltre deve essere aggiunta un'ulteriore riga che contiene nel seguente ordine: il numero massimo di **giri motore** (rpm), la **temperatura massima**, la **velocità massima** e la **velocità media**. La sua struttura è:
-
-```csv
-rpm max, temp max, velocità max, velocità media
-```
-
-### Vincoli
-
-- La velocità media è calcolata prendendo solamente la parte intera del quoziente.
-- Se il nome dell'utente non corrisponde ad nessun **id** viene stampata la stringa `"Invalid"`.
-
-<!-- | **ID** | **Pilota**         |
-| :----- | -----------------: |
-| 0      | Pierre Gasly       |
-| 1      | Charles Leclerc    |
-| 2      | Max Verstappen     |
-| 3      | Lando Norris       |
-| 4      | Sebastian Vettel   |
-| 5      | Daniel Ricciardo   |
-| 6      | Lance Stroll       |
-| 7      | Carlos Sainz       |
-| 8      | Antonio Giovinazzi |
-| 9      | Kevin Magnussen    |
-| 10     | Alexander Albon    |
-| 11     | Nicholas Latifi    |
-| 12     | Lewis Hamilton     |
-| 13     | Romain Grosjean    |
-| 14     | George Russell     |
-| 15     | Sergio Perez       |
-| 16     | Daniil Kvyat       |
-| 17     | Kimi Raikkonen     |
-| 18     | Esteban Ocon       |
-| 19     | Valtteri Bottas    | -->
+| **Parametro**     | `LOW`       | `MEDIUM`             | `HIGH`    |
+| :---------------: | :---------: | :------------------: | :-------: |
+| **Giri motore**   | $x \le 500$ | $5000 < x \le 10000$ | $x > 110$ |
+| **Temperatura**   | $x \le 90$  | $90 < x \le 110$     | $x > 110$ |
+| **Velocità**      | $x \le 110$ | $100 < x \le 250$    | $x > 250$ |
 
 ## Variabili
 
-blabla
+Per riuscire a realizzare il sistema abbiamo usufruito di quattro variabili:
+
+1. un array contenente i nomi dei piloti
+2. un array contenente le stringhe `"LOW"`, `"MEDIUM"`, `"HIGH"`
+3. un array contenente le soglie tra i livelli
+4. una stringa per scrivere `"Invalid"`.
+
+L'array contenente i nomi dei piloti viene utilizzato nella funzione `telemetry` per capire se la prima riga del file è un pilota valido, mentre quelli contenenti le stringhe e le soglie vengono utilizzate nella funzione `telemetry_line` per stampare la giusta stringa in base al valore della statistica.
+
+Questi array non sono altro che targhette salvate staticamente nel codice che poi vengono caricate una dopo l'altra contiguamente nello stack. Ad esempio per caricare le stringhe dei livelli abbiamo scritto:
+
+> ```s
+> /* Carica la stringa "HIGH". */
+> leal level_02_str, %esi         # Carica l'indirizzo in %esi.
+> movl %esi, -4(%ebp)             # e lo copia nello stack.
+>
+> /* Ripete la stessa operazione con "MEDIUM" e "LOW". */
+> leal level_01_str, %esi
+> movl %esi, -8(%ebp)
+> leal level_00_str, %esi
+> movl %esi, -12(%ebp)
+> ```
+
+Mentre per l'array delle soglie, essendo costituito da interi, non abbiamo utilizzato l'istruzione `leal` ma `movl`. Infine, la stringa `"Invalid"` viene usata anch'essa in `telemetry` nel caso in cui il pilota non sia stato riconosciuto.
 
 ## Funzioni
 
-Abbiamo suddiviso il programma in varie routine alle quali forniamo i parametri tramite lo *stack* del programma. Questo metodo richiede particolare attenzione perché lo *stack* viene usata anche dal sistema stesso.
+### Passaggio dei parametri
 
-### Chiamata di una funzione e passaggio parametri
+Prima di tutto, durante la chiamata di una funzione esistono due protagonisti, il **chiamante** ed il **chiamato**, che hanno responsabilità diverse.
 
-Nel blocco chiamante di una funzione:
+Più precisamente, nello standard di chiamata C, il *chiamante* deve:
+
+1. Eventualmente salvare i registri `%eax`, `%edx` ed `%ecx`
+2. Caricare nello stack dall'ultimo al primo i vari parametri
+3. Chiamare la funzione stessa
+4. Recuperare il risultato dal registro `%eax` se necessario.
+
+Viceversa, il *chiamato* ha il compito di:
+
+1. Salvare il registro `%ebp` nello stack
+2. Allocare eventuale spazio nello stack per le variabili
+3. Salvare i registri `%ebx`, `%esi`, `%edi` se vengono utilizzati
+4. Eseguire tutte le operazioni utili a produrre il risultato
+5. Recuperare i registri se precedentemente salvati
+6. Liberare lo spazio se precedentemente allocato
+7. Recuperare il valore iniziale di `%ebp` dallo stack
+8. Ritornare al chiamante.
+
+### Funzioni di supporto
+
+Per riuscire a implementare il sistema nel modo più comprensibile e ordinato possibile, abbiamo implementato delle funzioni di supporto come ad esempio le `strncmp` e `strncpy` della libreria standard C.
+
+<!-- Nel blocco chiamante di una funzione:
 
 - abbiamo caricato nello *stack*, dopo averli inseriti negli opportuni registri, i parametri da passare alla funzione, in ordine inverso così che possiamo estrarli più comodamente;
 
@@ -90,7 +103,6 @@ Nel blocco chiamante di una funzione:
 
 - conclusa la funzione, abbiamo liberato lo spazio di memoria che era stato riservato ai parametri della funzione, incrementando `%esp` di 4 byte per parametro, dato che siamo in un’architettura a 32 bit.
 
-### Inizio/Conclusione di una funzione e restituzione di un valore
 
 Nel blocco della funzione chiamata, durante la fase iniziale:
 
@@ -110,284 +122,191 @@ Prima di concludere la funzione:
 
 - abbiamo estratto `%ebp` ripristinando così la sua posizione;
 
-- abbiamo utilizzato l’istruzione `ret`, terminando la funzione e posizionando il programma all’istruzione successiva alla `call`.
-
-### strlen
-
-```c
-unsigned int
-strlen(const char *str);
-```
-
-| Parametro | Descrizione                                 |
-| :-------: | :-----------------------------------------: |
-| `str`     | Stringa della quale calcolare la lunghezza. |
-
-La funzione accetta in ingresso una stringa e ne calcola la lunghezza.
-
-Prima di tutto copia l'indirizzo, poi incrementa il puntatore finché il carattere non equivale al terminatore (`'\0'`). Infine restituisce la differenza tra l'indirizzo del terminatore e quello originale, cioè la distanza tra i due e quindi la lunghezza della stringa.
-
-Durante la sottrazione decrementa ulteriormente il valore perché altrimenti considererebbe anche il terminatore stesso.
-
-```c
-unsigned int
-strlen(const char *str)
-{
-    const char *s = str;
-
-    while (*s++ != 0);
-
-    return s - str - 1;
-}
-```
-
-### strncmp
-
-```c
-int
-strncmp(const char *str1, const char *str2, int num);
-```
-
-| Parametro | Descrizione                                 |
-| :-------: | :-----------------------------------------: |
-
-La funzione accetta in ingresso due stringhe e un intero, calcola se le due stringhe sono uguali.
-
-Dichiara due caratteri inizializzati a 0 (`'\0'`) che vengono usati in un ciclo per scorrere i caratteri puntati nelle due stringhe. Se si trovano dei caratteri diversi, se si raggiunge il terminatore della prima stringa o se sono stati confrontati il numero di caratteri dato dal valore intero passato come parametro, il ciclo viene concluso. Alla fine compie una sottrazione tra i caratteri puntati alla conclusione del ciclo. Se la differenza è uguale a 0, le stringhe sono uguali.
-
-```c
-int
-strncmp(const char *str1, const char *str2, int num)
-{
-    char c1 = 0, c2 = 0;
-
-    do {
-        c1 = *str1++, c2 = *str2++;
-    } while (num-- > 0 && c1 != 0 && c1 == c2);
-
-    return c1 - c2;
-}
-```
-
-### strnrev
-
-```c
-char *
-strnrev(char *str, int num);
-```
-
-| Parametro | Descrizione                                 |
-| :-------: | :-----------------------------------------: |
-
-La funzione accetta in ingresso una stringa e un valore intero che indica il numero di caratteri della stringa da invertire.
-
-Copia la stringa da invertire in due ulteriori stringhe e dichiara un carattere inizializzato a 0 (`'\0'`). Nella seconda stringa somma al puntatore il valore intero passato come parametro. Scorre i caratteri, scambiando quelli correnti puntati, incrementa il puntatore alla prima stringa e decrementa il puntatore alla seconda. Se il puntatore alla prima stringa è maggiore del puntatore alla seconda, conclude il ciclo. Infine restituisce i caratteri invertiti della stringa.
-
-```c
-char *
-strnrev(char *str, int num)
-{
-    char *s = str, *d = str + num, c = 0;
-
-    for (; s < d; ++s, --d)
-        c = *s, *s = *d, *d = c;
-
-    return str;
-}
-```
-
-### strncpy
-
-```c
-int
-strncpy(char *dst, const char *src, int num);
-```
-
-| Parametro | Descrizione                                 |
-| :-------: | :-----------------------------------------: |
-
-La funzione accetta come parametro due stringhe, destinazione e sorgente, e un valore intero. Copia un certo numero di caratteri della sorgente nella destinazione.
-
-Copia gl'indirizzi delle due stringhe, poi scorre i puntatori decrementando il valore intero finché non è minore di 0. Copia il carattere puntato nella sorgente in quello puntato nella destinazione e conclude il ciclo se uno dei caratteri puntati è un terminatore, altrimenti incrementa i puntatori. Alla fine restituisce il numero di caratteri copiati, dato dalla differenza tra i due puntatori.
-
-Se il valore intero passato è maggiore della lunghezza della sorgente, e la sorgente ha il carattere terminatore, la destinazione viene terminata.
-
-```c
-int
-strncpy(char *dst, const char *src, int num)
-{
-    const char *s = src;
-    char *d = dst;
-
-    while (num-- > 0) {
-        if ((*d++ = *s++) == 0)
-            break;
-    }
-
-    return d - dst;
-}
-```
-
-### strlcpy
-
-```c
-int
-strlcpy(char *dst, const char *src, int num);
-```
-
-| Parametro | Descrizione                                 |
-| :-------: | :-----------------------------------------: |
-
-La funzione accetta come parametro due stringhe, destinazione e sorgente, e un valore intero. Copia un certo numero di caratteri della sorgente nella destinazione e aggiunge il terminatore.
-
-Copia gl'indirizzi delle due stringhe e scorre i puntatori finché il valore intero è maggiore di 0. Copia il puntatore alla sorgente nel puntatore alla destinazione e conclude il ciclo se uno i caratteri puntati è un terminatore, altrimenti incrementa i puntatori. Poi aggiunge il carattere terminatore alla destinazione. Restituisce quinti il numero di caratteri copiati, dato dalla differenza tra i due puntatori.
-
-```c
-int
-strlcpy(char *dst, const char *src, int num)
-{
-    int n = num;
-    const char *s = src;
-    char *d = dst;
-
-    while (--num > 0) {
-        if ((*d++ = *s++) == 0)
-            break;
-    }
-
-    if (num == 0 && n > 0)
-        *d = 0;
-
-    return d - dst;
-}
-```
-
-### strtoi
-
-```c
-unsigned int
-strtoi(const char *str);
-```
-
-| Parametro | Descrizione                                 |
-| :-------: | :-----------------------------------------: |
-
-La funzione accetta in ingresso una stringa, converte la stringa in un valore in base 10.
-
-Dichiara un valore intero a zero e scorre i caratteri puntati della stringa finché il loro codice ASCI è compreso tra quello dei valori numerici. Quindi salva nel valore intero dichiarato all'inizio il valore stesso moltiplicato per 10, somma il valore del carattere puntato e poi sottrae 48 (il valore ASCI corrispondente a 0, da cui partono le altre cifre decimali). Infine restituisce la stringa convertita.
-
-```c
-unsigned int
-strtoi(const char *str)
-{
-    int res = 0;
-
-    while (*str >= 48 && *str <= 57)
-        res = res * 10 + *str++ - 48;
-
-    return res;
-}
-```
-
-### itostr
-
-```c
-char *
-itostr(unsigned int num, char *str);
-```
-
-| Parametro | Descrizione                                 |
-| :-------: | :-----------------------------------------: |
-
-La funzione accetta in ingresso un numero intero in base 10 e una stringa, converte il numero intero in una stringa.
-
-Copia il numero intero e il puntatore alla stringa. Se il numero è uguale a 0 aggiunge semplicemente 48 al puntatore, che poi viene incrementato. Altrimenti scorre il numero intero convertendo ogni cifra (ottenuta come resto della divisione per 10) in un carattere che viene salvato nella stringa copiata e poi divide il numero per la 10. Il ciclo continua finche il numero diviso è maggiore di 0. Aggiunge alla stringa il carattere terminatore, inverte la stringa con la funzione `strnrev` e la restituisce.
-
-```c
-char *
-itostr(unsigned int num, char *str)
-{
-    int n = num;
-    char *s = str;
-
-    if (num != 0) {
-        do {
-            *s++ = (num % 10) + 48;
-        }  while (num /= 10);
-    } else
-        *s++ = 48;
-
-    *s = 0;
-
-    c_strnrev(str, s - str - 1);
-    return str;
-}
-```
-
-### strsep
-
-```c
-char*
-strsep(char **ptr, char sep)
-```
-
-| Parametro | Descrizione                                 |
-| :-------: | :-----------------------------------------: |
-
-La funzione accetta in ingresso una stringa e un carattere separatore, restituisce il pezzo di stringa precedente al separatore.
-
-Copia in due ulteriori stringhe quella passata come parametro e controlla se la prima stringa contiene dei caratteri. Incrementa il puntatore alla prima stringa finche non si raggiunge la sua fine o un carattere che è uguale al separatore.
-Concluso il ciclo, se il carattere puntato è uguale al terminatore, lo aggiunge alla stringa passata come parametro. Se invece il carattere puntato è diverso dal terminatore lo sostituisce con il terminatore e sostituisce la stringa passata come parametro con il pezzo restante di stringa successivo al separatore. Quindi restituisce la seconda stringa dichiarata all'inizio, che ha subito le modifiche avvenute durante l'esecuzione.
-Se la stringa passata come parametro non contiene nessun carattere, la restituisce senza compiere ulteriori operazioni.
-
-```c
-char*
-strsep(char **ptr, char sep)
-{
-    char *s = *ptr, *d = *ptr;
-
-    if (s != 0) {
-        while (*s != 0 && *s != sep)
-            ++s;
-
-        if (*s != 0) {
-            *s++ = 0;
-            *ptr = s;
-        } else
-            *ptr = 0;
-    }
-
-    return d;
-}
-```
-
-### strnsep
-
-```c
-int
-strnsep(char *arr[], int num, char **ptr, char sep)
-```
-
-| Parametro | Descrizione                                 |
-| :-------: | :-----------------------------------------: |
-
-La funzione accetta in ingresso un array di stringhe, la sua lunghezza, una stringa e un carattere separatore. Restituisce il numero di volte in cui è avvenuta una separazione della stringa.
-
-Inizializza 2 variabili intere a 0 e prosegue con un ciclo che finisce quando la seconda variabile è uguale alla lunghezza dell'array. Dentro il ciclo salva nella posizione puntata nell'array il risultato della funzione `strsep`, se è diverso da 0 incrementa il conteggio delle separazioni (prima variabile intera), altrimenti prosegue col ciclo. Concluso il ciclo restituisce il conteggio delle separazioni.
-
-```c
-int
-strnsep(char *arr[], int num, char **ptr, char sep)
-{
-    int l = 0, c = 0;
-
-    while (l++ < num)
-        if ((*arr++ = c_strsep(ptr, sep)) != 0)
-            ++c;
-
-    return c;
-}
-```
+- abbiamo utilizzato l’istruzione `ret`, terminando la funzione e posizionando il programma all’istruzione successiva alla `call`. -->
+
+#### Lunghezza di una stringa
+
+> ```c
+> unsigned int
+> strlen(const char *str)
+> {
+>     const char *s = str;      // Copia l'indirizzo originale.
+>
+>     while (*s != 0)           // Finché non incontra il terminatore.
+>         ++s;                  // incrementa il puntatore.
+>
+>     return s - str - 1;       // Restituisce la distanza tra i due.
+> }
+> ```
+
+Calcola la lunghezza di una stringa escludendo il carattere terminatore.
+
+#### Confronto tra stringhe
+
+> ```c
+> int
+> strncmp(const char *str1, const char *str2, unsigned int num)
+> {
+>     char c1 = 0, c2 = 0;
+>
+>     do {
+>         c1 = *str1++, c2 = *str2++;
+>     } while (num-- > 0 && c1 != 0 && c1 == c2);
+>
+>     return c1 - c2;
+> }
+> ```
+
+Confronta un certo numero di caratteri di due stringhe.
+
+#### Ribaltamento di una stringa
+
+> ```c
+> char *
+> strnrev(char *str, unsigned int num)
+> {
+>     char *s = str, *d = str + num, c = 0;
+>
+>     for (; s < d; ++s, --d)
+>         c = *s, *s = *d, *d = c;
+>
+>     return str;
+> }
+> ```
+
+Scambia un certo numero di caratteri di una stringa.
+
+#### Copia di una stringa
+
+> ```c
+> unsigned int
+> strncpy(char *dst, const char *src, unsigned int num)
+> {
+>     const char *s = src;
+>     char *d = dst;
+>
+>     while (num-- > 0) {
+>         if ((*d++ = *s++) == 0)
+>             break;
+>     }
+>
+>     return d - dst;
+> }
+> ```
+
+Copia un certo numero di caratteri da una stringa in un'altra.
+
+Solamente se il numero di caratteri da copiare supera la lunghezza della stringa sorgente, allora viene copiato anche il terminatore.
+
+#### Copia di una stringa
+
+> ```c
+> unsigned int
+> strlcpy(char *dst, const char *src, unsigned int num);
+> {
+>     int n = num;
+>     const char *s = src;
+>     char *d = dst;
+>
+>     while (--num > 0) {
+>         if ((*d++ = *s++) == 0)
+>             break;
+>     }
+>
+>     if (num == 0 && n > 0)
+>         *d = 0;
+>
+>     return d - dst;
+> }
+> ```
+
+Copia un certo numero di caratteri da una stringa in un'altra.
+
+Indipendentemente dallo stato della stringa sorgente, quella di destinazione viene terminata sempre, al prezzo di un carattere copiato in meno.
+
+#### Conversione da stringa ad intero
+
+> ```c
+> unsigned int
+> strtoi(const char *str)
+> {
+>     int res = 0;
+>
+>     while (*str >= 48 && *str <= 57)
+>         res = res * 10 + *str++ - 48;
+>
+>     return res;
+> }
+> ```
+
+Converte una stringa in un intero di base 10.
+
+#### Conversione da intero a stringa
+
+> ```c
+> char *
+> itostr(unsigned int num, char *str)
+> {
+>     int n = num;
+>     char *s = str;
+>
+>     if (num != 0) {
+>         do {
+>             *s++ = (num % 10) + 48;
+>         }  while (num /= 10);
+>     } else
+>         *s++ = 48;
+>
+>     *s = 0;
+>
+>     c_strnrev(str, s - str - 1);
+>     return str;
+> }
+> ```
+
+Converte un intero di base 10 in una stringa.
+
+#### Separazione di una stringa
+
+> ```c
+> char*
+> strsep(char **ptr, char sep)
+> {
+>     char *s = *ptr, *d = *ptr;
+>
+>     if (s != 0) {
+>         while (*s != 0 && *s != sep)
+>             ++s;
+>
+>         if (*s != 0) {
+>             *s++ = 0;
+>             *ptr = s;
+>         } else
+>             *ptr = 0;
+>     }
+>
+>     return d;
+> }
+> ```
+
+Spezza una stringa sul posto in base ad un certo carattere separatore.
+
+<!--
+#### Separazione di una stringa
+
+> ```c
+> unsigned int
+> strnsep(char *arr[], unsigned num, char **ptr, char sep)
+> {
+>     int l = 0, c = 0;
+>
+>     while (l++ < num)
+>         if ((*arr++ = strsep(ptr, sep)) != 0)
+>             ++c;
+>
+>     return c;
+> }
+> ```
 
 ### arrfind
 
@@ -517,7 +436,7 @@ telemetry_loop(int idx, char *src, char *dst);
 
 La funzione accetta in ingresso l'indice del pilota, una stringa sorgente e una destinazione. Manipola i dati appartenenti al pilota e li salva nella destinazione.
 
-Finché non ha raggiunto la fine della sorgente, svolge le seguenti operazioni: copia le stringhe una riga alla volta, se la stringa non è vuota salva in un array di stringhe (`str[5]`) le sue parti separate da una virgola; se la seconda stringa di `str[]` non è vuota, la converte in intero; se il numero ottenuto è uguale all'indice del pilota da analizzare, salva in un array d'interi (`val[4]`) i valori `str[2] - str[4]`; ricopia il primo elemento di `val[]` nella destinazione, aggiunge una virgola e poi con la funzione `telemetry_line()` sostituisce gli altri elementi di `val[]` con apposite stringhe, in base alla posizione e al valore. Salva in un altro array d'interi (`tst[4]`) i valori massimi dei dati del pilota, poi incrementa un contatore.  
+Finché non ha raggiunto la fine della sorgente, svolge le seguenti operazioni: copia le stringhe una riga alla volta, se la stringa non è vuota salva in un array di stringhe (`str[5]`) le sue parti separate da una virgola; se la seconda stringa di `str[]` non è vuota, la converte in intero; se il numero ottenuto è uguale all'indice del pilota da analizzare, salva in un array d'interi (`val[4]`) i valori `str[2] - str[4]`; ricopia il primo elemento di `val[]` nella destinazione, aggiunge una virgola e poi con la funzione `telemetry_line()` sostituisce gli altri elementi di `val[]` con apposite stringhe, in base alla posizione e al valore. Salva in un altro array d'interi (`tst[4]`) i valori massimi dei dati del pilota, poi incrementa un contatore.
 Concluso il ciclo, divide l'ultimo valore di `tst[]` per il contatore, ottenendo così una media, e infine utilizza l'array per la funzione `telemetry_last()`.
 
 ```c
@@ -586,4 +505,4 @@ telemetry(char *src, char *dst)
 
     return 0;
 }
-```
+``` -->
