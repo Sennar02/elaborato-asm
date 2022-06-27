@@ -130,12 +130,16 @@ Prima di concludere la funzione:
 > unsigned int
 > strlen(const char *str)
 > {
->     const char *s = str;      // Copia l'indirizzo originale.
+>     // Copia l'indirizzo originale.
+>     const char *s = str;
 >
->     while (*s != 0)           // Finché non incontra il terminatore.
->         ++s;                  // incrementa il puntatore.
+>     // Finché non incontra il terminatore
+>     // incrementa il puntatore.
+>     while (*s != 0)
+>         ++s;
 >
->     return s - str - 1;       // Restituisce la distanza tra i due.
+>     // Restituisce la distanza tra i due.
+>     return s - str - 1;
 > }
 > ```
 
