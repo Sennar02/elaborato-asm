@@ -97,21 +97,9 @@ Per riuscire a implementare il sistema nel modo più comprensibile e ordinato po
 
 #### Lunghezza di una stringa
 
-> ```{.c latex-fontsize=small}
+> ```c
 > unsigned int
 > strlen(const char *str)
-> {
->     // Copia l'indirizzo originale.
->     const char *s = str;
->
->     // Finché non incontra il terminatore
->     // incrementa il puntatore.
->     while (*s != 0)
->         ++s;
->
->     // Restituisce la distanza tra i due.
->     return s - str - 1;
-> }
 > ```
 
 Calcola la lunghezza di una stringa escludendo il carattere terminatore.
@@ -121,22 +109,6 @@ Calcola la lunghezza di una stringa escludendo il carattere terminatore.
 > ```c
 > int
 > strncmp(const char *str1, const char *str2, unsigned int num)
-> {
->     char c1 = 0, c2 = 0;
->
->     // Copia un carattere da ciascuna di ognuna
->     // delle stringhe finché i due caratteri estratti
->     // corrispondono, non è terminata almeno una delle
->     // due stringhe oppure finché il contatore dei
->     // confronti non è a zero.
->     do {
->         c1 = *str1++, c2 = *str2++;
->     }
->     while (num-- > 0 && c1 != 0 && c1 == c2);
->
->     // Restituisce la differenza tra i due caratteri.
->     return c1 - c2;
-> }
 > ```
 
 Confronta un certo numero di caratteri di due stringhe.
@@ -146,22 +118,6 @@ Confronta un certo numero di caratteri di due stringhe.
 > ```c
 > char *
 > strnrev(char *str, int num)
-> {
->     // Copia l'indirizzo del primo carattere
->     // e l'indirizzo dopo num caratteri.
->     char *b = str, *e = str + num, c = 0;
->
->     // Finché non raggiunge la metà della stringa
->     // scambia i due caratteri e sposta i puntatori
->     // verso il centro.
->     for (; b < e; ++b, --e) {
->         c  = *b;
->         *b = *e;
->         *e = c;
->     }
->
->     return str;
-> }
 > ```
 
 Scambia un certo numero di caratteri di una stringa.
@@ -171,20 +127,6 @@ Scambia un certo numero di caratteri di una stringa.
 > ```c
 > int
 > strncpy(char *dst, const char *src, int num)
-> {
->     // Copia l'indirizzo di destinazione.
->     char *d = dst;
->
->     // Copia il carattere di src in d finché non raggiunge
->     // il terminatore oppure il contatore è nullo.
->     while (num-- > 0) {
->         if ((*d++ = *src++) == 0)
->             break;
->     }
->
->     // Restituisce il numero di caratteri copiati.
->     return d - dst;
-> }
 > ```
 
 Copia un certo numero di caratteri da una stringa in un'altra.
@@ -196,28 +138,6 @@ Solamente se il numero di caratteri da copiare supera la lunghezza della stringa
 > ```c
 > unsigned int
 > strlcpy(char *dst, const char *src, unsigned int num);
-> {
->     // Copia il numero di caratteri da copiare.
->     int   n = num;
->     // Copia l'indirizzo di destinazione.
->     char *d = dst;
->
->     // Copia il carattere di src in d finché non raggiunge
->     // il terminatore oppure il contatore è nullo ma copiando
->     // un carattere in meno.
->     while (--num > 0) {
->         if ((*d++ = *src++) == 0)
->             break;
->     }
->
->     // Se ha copiato effettivamente almeno un carattere,
->     // termina la stringa.
->     if (num == 0 && n > 0)
->         *d = 0;
->
->     // Restituisce il numero di caratteri copiati.
->     return d - dst;
-> }
 > ```
 
 Copia un certo numero di caratteri da una stringa in un'altra.
@@ -229,16 +149,6 @@ Indipendentemente dallo stato della stringa sorgente, quella di destinazione vie
 > ```c
 > unsigned int
 > strtoi(const char *str)
-> {
->     int res = 0;
->
->     // Finché il carattere è numerico lo converte,
->     // shift il numero e inserisce la nuova cifra.
->     while (*str >= '0' && *str <= '9')
->         res = res * 10 + *str++ - '0';
->
->     return res;
-> }
 > ```
 
 Converte una stringa in un intero di base 10.
@@ -248,30 +158,6 @@ Converte una stringa in un intero di base 10.
 > ```c
 > char *
 > itostr(unsigned int num, char *str)
-> {
->     // Copia l'indirizzo originale.
->     char *s = str;
->
->     // Se il numero da convertire è maggiore di zero, allora
->     // converte la cifra meno significativa e la copia in fondo
->     // finché il numero non rimane azzerato.
->     if (num > 0) {
->         do {
->             *s++ = (num % 10) + 48;
->         }
->         while (num /= 10);
->     }
->     // Altrimenti copia semplicemente zero.
->     else
->         *s++ = 48;
->
->     // Termina la stringa in ogni caso.
->     *s = 0;
->
->     // Rovescia la stringa.
->     strnrev(str, s - str - 1);
->     return str;
-> }
 > ```
 
 Converte un intero di base 10 in una stringa.
@@ -281,16 +167,6 @@ Converte un intero di base 10 in una stringa.
 > ```c
 > unsigned int
 > select(unsigned int val, unsigned int arr[], unsigned int len)
-> {
->     for (int i = 0; i < len; ++i)
->         // Se il valore è minore della i-esima soglia, allora
->         // restituisce l'indice.
->         if (val <= arr[i])
->             return i;
->
->     // Restituisce l'indice più grande, non è in alcun intervallo.
->     return len;
-> }
 > ```
 
 Verifica in quale intervallo si trova un determinato valore.
@@ -300,28 +176,6 @@ Verifica in quale intervallo si trova un determinato valore.
 > ```c
 > char*
 > strsep(char **ptr, char sep)
-> {
->     // Copia l'indirizzo originale.
->     char *s = *ptr, *d = *ptr;
->
->     if (s != 0) {
->         // Scorre la stringa finché non termina o non
->         // raggiunge il carattere separatore.
->         while (*s != 0 && *s != sep)
->             ++s;
->
->         // Se la stringa continua, la termina e aggiorna il puntatore.
->         if (*s != 0) {
->             *s++ = 0;
->             *ptr = s;
->         }
->         // Altrimenti annulla la stringa.
->         else
->             *ptr = 0;
->     }
->
->     return d;
-> }
 > ```
 
 Spezza una stringa sul posto in base ad un certo carattere separatore.
@@ -331,18 +185,6 @@ Spezza una stringa sul posto in base ad un certo carattere separatore.
 > ```c
 > unsigned int
 > strnsep(char *arr[], unsigned int num, char **ptr, char sep)
-> {
->     unsigned int cnt = 0;
->
->     for (unsigned int i = 0; i < num; ++i) {
->         // Separa la stringa e se riceve un puntatore valido,
->         // incrementa il contatore delle separazioni efficaci.
->         if ((*arr++ = c_strsep(ptr, sep)) != 0)
->             ++cnt;
->     }
->
->     return cnt;
-> }
 > ```
 
 Spezza una stringa sul posto in base ad un certo carattere separatore più volte.
@@ -352,22 +194,6 @@ Spezza una stringa sul posto in base ad un certo carattere separatore più volte
 > ```c
 > int
 > arrfind(const char *arr[], unsigned int len, const char *key)
-> {
->     // Calcola la lunghezza della chiave.
->     int num = strlen(key);
->
->     // Scorre tutto l'array confrontando ogni elemento
->     // con la chiave, se almeno un elemento corrisponde
->     // ne restituisce la posizione.
->     for (int i = 0; i < len; ++i) {
->         if (strncmp(key, arr[i], num) == 0)
->             return i;
->     }
->
->     // Se non ha trovato alcun elemento restituisce
->     // un indice inesistente.
->     return -1;
-> }
 > ```
 
 Cerca una particolare chiave all'interno di un array.
