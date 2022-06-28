@@ -1,11 +1,11 @@
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include "file.h"
-#include "lib.h"
-#include "telemety.h"
 #include "../../src/asm/library.h"
 #include "../../src/telemetry.h"
+#include "file.h"
+#include "library.h"
+#include "telemety.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 int
 main(int argc, const char *argv[])
@@ -21,8 +21,8 @@ main(int argc, const char *argv[])
     dst = file_create(argv[2], "w");
 
     if (src != 0 && dst != 0) {
-        char *str = (char*) file_read(src);
-        int len = strlen(str);
+        char *str = (char *) file_read(src);
+        int   len = strlen(str);
         char *out = calloc(len + 1, 1);
 
         // printf("\x1b[33mSource\x1b[0m:\n\n%s\n", str);

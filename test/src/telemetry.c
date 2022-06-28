@@ -1,6 +1,6 @@
-#include <stdio.h>
+#include "library.h"
 #include "telemety.h"
-#include "lib.h"
+#include <stdio.h>
 
 static const char *names[] = {
     "Pierre Gasly",
@@ -22,34 +22,30 @@ static const char *names[] = {
     "Daniil Kvyat",
     "Kimi Raikkonen",
     "Esteban Ocon",
-    "Valtteri Bottas"
+    "Valtteri Bottas",
 };
 
 static int treshs[] = {
-    5000, 10000, // giri
-    90,   110,   // temperatura
-    100,  250,   // velocità
+    5000, // giri
+    10000,
+    90, // temperatura
+    110,
+    100, // velocità
+    250,
 };
 
 static const char *levels[] = {
-    "LOW", "MEDIUM", "HIGH"
+    "LOW",
+    "MEDIUM",
+    "HIGH",
 };
-
-int
-c_max(int val, int max)
-{
-    if (val > max)
-        return val;
-    else
-        return max;
-}
 
 int
 c_telemetry_line(int arr[], char *dst)
 {
-    char *d = dst;
+    char       *d   = dst;
     const char *out = 0;
-    int idx = 0, siz = 0;
+    int         idx = 0, siz = 0;
 
     for (int i = 0; i < 3; ++i) {
         idx = c_select(arr[i], treshs + i * 2, 2);
@@ -88,7 +84,7 @@ void
 c_telemetry_loop(int idx, char *src, char *dst)
 {
     char *s = src, *lin = 0, *str[5] = {0};
-    int cnt = 0, pid = 0, val[4] = {0}, tst[4] = {0};
+    int   cnt = 0, pid = 0, val[4] = {0}, tst[4] = {0};
 
     for (cnt = 0; src != 0;) {
         lin = c_strsep(&src, '\n');
@@ -127,7 +123,7 @@ int
 c_telemetry(char *src, char *dst)
 {
     char *lin = c_strsep(&src, '\n');
-    int idx = c_arrfind(names, 20, lin);
+    int   idx = c_arrfind(names, 20, lin);
 
     if (idx >= 0)
         c_telemetry_loop(idx, src, dst);

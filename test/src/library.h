@@ -118,17 +118,15 @@ int
 c_strnsep(char *arr[], int num, char **ptr, char sep);
 
 /**
- * @brief Cerca una particolare chiave all'interno di un array.
+ * @brief Restituisce il massimo tra due interi.
  *
- * @param arr Array di stringhe.
- * @param len Lunghezza dell'array.
- * @param key Chiave da ricercare.
+ * @param val Primo valore.
+ * @param max Secondo valore.
  *
- * @return -1 se non è presente, altrimenti la posizione
- *         della stringa nell'array.
+ * @return Il valore massimo.
  */
 int
-c_arrfind(const char *arr[], int len, const char *key);
+c_max(int val, int max);
 
 /**
  * @brief Verifica in quale intervallo si trova un determinato valore.
@@ -141,5 +139,18 @@ c_arrfind(const char *arr[], int len, const char *key);
  */
 int
 c_select(int val, int arr[], int len);
+
+/**
+ * @brief Cerca una particolare chiave all'interno di un array.
+ *
+ * @param arr Array di stringhe.
+ * @param len Lunghezza dell'array.
+ * @param key Chiave da ricercare.
+ *
+ * @return -1 se non è presente, altrimenti la posizione
+ *         della stringa nell'array.
+ */
+int
+c_arrfind(const char *arr[], int len, const char *key)
 
 #endif /* LIB_H */

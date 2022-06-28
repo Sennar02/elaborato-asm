@@ -1,6 +1,6 @@
 # Sistema di telemetria F1
 
-Abbiamo sviluppato un programma in linguaggio *Assembly x86* con sintassi **AT&T**, che simula il sistema di telemetria del videogame F1.
+Abbiamo sviluppato un programma in linguaggio Assembly `x86` con sintassi AT&T, che simula il sistema di telemetria del videogame F1.
 
 ## Traccia
 
@@ -93,40 +93,11 @@ Viceversa, il *chiamato* ha il compito di:
 
 ### Funzioni di supporto
 
-Per riuscire a implementare il sistema nel modo più comprensibile e ordinato possibile, abbiamo implementato delle funzioni di supporto come ad esempio le `strncmp` e `strncpy` della libreria standard C.
-
-<!-- Nel blocco chiamante di una funzione:
-
-- abbiamo caricato nello *stack*, dopo averli inseriti negli opportuni registri, i parametri da passare alla funzione, in ordine inverso così che possiamo estrarli più comodamente;
-
-- abbiamo utilizzato l’istruzione `call`, che invoca la funzione specificata. Dopo che la funzione è terminata il valore restituito, se presente, si trova in `%eax`;
-
-- conclusa la funzione, abbiamo liberato lo spazio di memoria che era stato riservato ai parametri della funzione, incrementando `%esp` di 4 byte per parametro, dato che siamo in un’architettura a 32 bit.
-
-
-Nel blocco della funzione chiamata, durante la fase iniziale:
-
-- abbiamo caricato il valore di `%ebp` nello *stack*, per salvare così il suo valore iniziale e ripristinarlo una volta conclusa la funzione;
-
-- abbiamo salvato lo *stack* pointer in `%ebp`. Per accedere ai parametri e alle variabili locali si utilizza `%ebp` e un offset;
-
-- abbiamo caricato nello *stack* i registri che utilizzeremo nella funzione e i cui valori vogliamo ripristinare conclusa la funzione;
-
-- abbiamo utilizzato `%ebp` con un certo offset per salvare i parametri della funzione negli opportuni registri.
-
-Prima di concludere la funzione:
-
-- abbiamo salvato nel registro `%eax` l’eventuale valore da restituire;
-
-- abbiamo estratto i registri caricati all’inizio della funzione;
-
-- abbiamo estratto `%ebp` ripristinando così la sua posizione;
-
-- abbiamo utilizzato l’istruzione `ret`, terminando la funzione e posizionando il programma all’istruzione successiva alla `call`. -->
+Per riuscire a implementare il sistema nel modo più comprensibile e ordinato possibile, abbiamo implementato delle funzioni di supporto come ad esempio le `strncmp` e `strncpy` della libreria standard C con alcune modifiche.
 
 #### Lunghezza di una stringa
 
-> ```c
+> ```{.c latex-fontsize=small}
 > unsigned int
 > strlen(const char *str)
 > {
@@ -153,10 +124,17 @@ Calcola la lunghezza di una stringa escludendo il carattere terminatore.
 > {
 >     char c1 = 0, c2 = 0;
 >
+>     // Copia un carattere da ciascuna di ognuna
+>     // delle stringhe finché i due caratteri estratti
+>     // corrispondono, non è terminata almeno una delle
+>     // due stringhe oppure finché il contatore dei
+>     // confronti non è a zero.
 >     do {
 >         c1 = *str1++, c2 = *str2++;
->     } while (num-- > 0 && c1 != 0 && c1 == c2);
+>     }
+>     while (num-- > 0 && c1 != 0 && c1 == c2);
 >
+>     // Restituisce la differenza tra i due caratteri.
 >     return c1 - c2;
 > }
 > ```
@@ -167,12 +145,20 @@ Confronta un certo numero di caratteri di due stringhe.
 
 > ```c
 > char *
-> strnrev(char *str, unsigned int num)
+> strnrev(char *str, int num)
 > {
->     char *s = str, *d = str + num, c = 0;
+>     // Copia l'indirizzo del primo carattere
+>     // e l'indirizzo dopo num caratteri.
+>     char *b = str, *e = str + num, c = 0;
 >
->     for (; s < d; ++s, --d)
->         c = *s, *s = *d, *d = c;
+>     // Finché non raggiunge la metà della stringa
+>     // scambia i due caratteri e sposta i puntatori
+>     // verso il centro.
+>     for (; b < e; ++b, --e) {
+>         c  = *b;
+>         *b = *e;
+>         *e = c;
+>     }
 >
 >     return str;
 > }
@@ -183,17 +169,20 @@ Scambia un certo numero di caratteri di una stringa.
 #### Copia di una stringa
 
 > ```c
-> unsigned int
-> strncpy(char *dst, const char *src, unsigned int num)
+> int
+> strncpy(char *dst, const char *src, int num)
 > {
->     const char *s = src;
+>     // Copia l'indirizzo di destinazione.
 >     char *d = dst;
 >
+>     // Copia il carattere di src in d finché non raggiunge
+>     // il terminatore oppure il contatore è nullo.
 >     while (num-- > 0) {
->         if ((*d++ = *s++) == 0)
+>         if ((*d++ = *src++) == 0)
 >             break;
 >     }
 >
+>     // Restituisce il numero di caratteri copiati.
 >     return d - dst;
 > }
 > ```
@@ -208,18 +197,25 @@ Solamente se il numero di caratteri da copiare supera la lunghezza della stringa
 > unsigned int
 > strlcpy(char *dst, const char *src, unsigned int num);
 > {
->     int n = num;
->     const char *s = src;
+>     // Copia il numero di caratteri da copiare.
+>     int   n = num;
+>     // Copia l'indirizzo di destinazione.
 >     char *d = dst;
 >
+>     // Copia il carattere di src in d finché non raggiunge
+>     // il terminatore oppure il contatore è nullo ma copiando
+>     // un carattere in meno.
 >     while (--num > 0) {
->         if ((*d++ = *s++) == 0)
+>         if ((*d++ = *src++) == 0)
 >             break;
 >     }
 >
+>     // Se ha copiato effettivamente almeno un carattere,
+>     // termina la stringa.
 >     if (num == 0 && n > 0)
 >         *d = 0;
 >
+>     // Restituisce il numero di caratteri copiati.
 >     return d - dst;
 > }
 > ```
@@ -236,8 +232,10 @@ Indipendentemente dallo stato della stringa sorgente, quella di destinazione vie
 > {
 >     int res = 0;
 >
->     while (*str >= 48 && *str <= 57)
->         res = res * 10 + *str++ - 48;
+>     // Finché il carattere è numerico lo converte,
+>     // shift il numero e inserisce la nuova cifra.
+>     while (*str >= '0' && *str <= '9')
+>         res = res * 10 + *str++ - '0';
 >
 >     return res;
 > }
@@ -251,24 +249,51 @@ Converte una stringa in un intero di base 10.
 > char *
 > itostr(unsigned int num, char *str)
 > {
->     int n = num;
+>     // Copia l'indirizzo originale.
 >     char *s = str;
 >
->     if (num != 0) {
+>     // Se il numero da convertire è maggiore di zero, allora
+>     // converte la cifra meno significativa e la copia in fondo
+>     // finché il numero non rimane azzerato.
+>     if (num > 0) {
 >         do {
 >             *s++ = (num % 10) + 48;
->         }  while (num /= 10);
->     } else
+>         }
+>         while (num /= 10);
+>     }
+>     // Altrimenti copia semplicemente zero.
+>     else
 >         *s++ = 48;
 >
+>     // Termina la stringa in ogni caso.
 >     *s = 0;
 >
->     c_strnrev(str, s - str - 1);
+>     // Rovescia la stringa.
+>     strnrev(str, s - str - 1);
 >     return str;
 > }
 > ```
 
 Converte un intero di base 10 in una stringa.
+
+#### Collocazione di un valore in un intervallo
+
+> ```c
+> unsigned int
+> select(unsigned int val, unsigned int arr[], unsigned int len)
+> {
+>     for (int i = 0; i < len; ++i)
+>         // Se il valore è minore della i-esima soglia, allora
+>         // restituisce l'indice.
+>         if (val <= arr[i])
+>             return i;
+>
+>     // Restituisce l'indice più grande, non è in alcun intervallo.
+>     return len;
+> }
+> ```
+
+Verifica in quale intervallo si trova un determinato valore.
 
 #### Separazione di una stringa
 
@@ -276,16 +301,22 @@ Converte un intero di base 10 in una stringa.
 > char*
 > strsep(char **ptr, char sep)
 > {
+>     // Copia l'indirizzo originale.
 >     char *s = *ptr, *d = *ptr;
 >
 >     if (s != 0) {
+>         // Scorre la stringa finché non termina o non
+>         // raggiunge il carattere separatore.
 >         while (*s != 0 && *s != sep)
 >             ++s;
 >
+>         // Se la stringa continua, la termina e aggiorna il puntatore.
 >         if (*s != 0) {
 >             *s++ = 0;
 >             *ptr = s;
->         } else
+>         }
+>         // Altrimenti annulla la stringa.
+>         else
 >             *ptr = 0;
 >     }
 >
@@ -295,76 +326,55 @@ Converte un intero di base 10 in una stringa.
 
 Spezza una stringa sul posto in base ad un certo carattere separatore.
 
-<!--
 #### Separazione di una stringa
 
 > ```c
 > unsigned int
-> strnsep(char *arr[], unsigned num, char **ptr, char sep)
+> strnsep(char *arr[], unsigned int num, char **ptr, char sep)
 > {
->     int l = 0, c = 0;
+>     unsigned int cnt = 0;
 >
->     while (l++ < num)
->         if ((*arr++ = strsep(ptr, sep)) != 0)
->             ++c;
+>     for (unsigned int i = 0; i < num; ++i) {
+>         // Separa la stringa e se riceve un puntatore valido,
+>         // incrementa il contatore delle separazioni efficaci.
+>         if ((*arr++ = c_strsep(ptr, sep)) != 0)
+>             ++cnt;
+>     }
 >
->     return c;
+>     return cnt;
 > }
 > ```
 
-### arrfind
+Spezza una stringa sul posto in base ad un certo carattere separatore più volte.
 
-```c
-int
-arrfind(const char *arr[], int len, const char *key);
-```
+#### Ricerca di una stringa in un array
 
-| Parametro | Descrizione                                 |
-| :-------: | :-----------------------------------------: |
+> ```c
+> int
+> arrfind(const char *arr[], unsigned int len, const char *key)
+> {
+>     // Calcola la lunghezza della chiave.
+>     int num = strlen(key);
+>
+>     // Scorre tutto l'array confrontando ogni elemento
+>     // con la chiave, se almeno un elemento corrisponde
+>     // ne restituisce la posizione.
+>     for (int i = 0; i < len; ++i) {
+>         if (strncmp(key, arr[i], num) == 0)
+>             return i;
+>     }
+>
+>     // Se non ha trovato alcun elemento restituisce
+>     // un indice inesistente.
+>     return -1;
+> }
+> ```
 
-La funzione accetta in ingresso un array di stringhe, la sua lunghezza e una stringa, indica se nell'array è presente la stringa passata.
+Cerca una particolare chiave all'interno di un array.
 
-Salva in una variabile la lunghezza della stringa passata come parametro. Confronta la stringa passata con ogni stringa dell'array utilizzando la funzione `strncmp`. Se trova la stringa corrispondente, restituisce la sua posizione nell'array. Se alla fine dell'array non ha trovato la stringa, restituisce -1.
+## Scelte progettuali
 
-```c
-int
-arrfind(const char *arr[], int len, const char *key)
-{
-    int num = c_strlen(key);
-
-    for (int i = 0; i < len; ++i) {
-        if (c_strncmp(key, arr[i], num) == 0)
-            return i;
-    }
-
-    return -1;
-}
-```
-
-### select
-
-```c
-int
-select(int val, int arr[], int len);
-```
-
-| Parametro | Descrizione                                 |
-| :-------: | :-----------------------------------------: |
-
-La funzione accetta in ingresso un valore intero, un array d'interi e la sua lunghezza, indica se il valore appartiene ad un certo intervallo.
-
-Parte con un ciclo che si conclude quando l'indice è uguale alla lunghezza dell'array passato come parametro. Se il valore passato è minore uguale dell'elemento dell'array alla posizione data dall'indice, il ciclo si conclude e restituisce l'indice corrente. Altrimenti, una volta finito il ciclo, restituisce la lunghezza dell'array.
-
-```c
-int
-select(int val, int arr[], int len)
-{
-    for (int i = 0; i < len; ++i)
-        if (val <= arr[i]) return i;
-
-    return len;
-}
-```
+<!--
 ### telemetry_line
 
 ```c
