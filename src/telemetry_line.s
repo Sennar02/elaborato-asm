@@ -1,14 +1,16 @@
 /**
- * @file asm_telemetry_line.s
- *
  * @brief Assegna ai tre valori di arr una targhetta tra
- *        LOW, MEDIUM, HIGH salvando le stringhe in dst.
+ *        LOW, MEDIUM, HIGH in base alla soglia in cui
+ *        rientrano salvando le tre stringhe in dst
+ *        separate da un virgola.
  *
- * @param arr Array di interi.
- * @param dst Puntatore alla destinazione.
- * @param pnts Array contenente le soglie dei dati.
- * @param strs Array di stringhe indicanti la soglia.
- * @return Il numero di caratteri aggiunti alla destinazione.
+ * @param arr Array cui vengono salvati i valori rpm,
+ *            temperatura e velocità per ogni istante.
+ * @param dst Stringa di destinazione.
+ * @param treshs Array di soglie.
+ * @param levels Array di livelli.
+ *
+ * @return Il numero di caratteri scritti nella stringa dst.
  */
 
 .text
@@ -27,42 +29,42 @@ telemetry_line:
         push %edi
         push %ebx
 
-    movl 8(%ebp), %esi      # Copia il puntatore all'array.
+    movl 8(%ebp), %esi      # Copia l'indirizzo all'array.
     movl 12(%ebp), %edi     # Copia la stringa destinazione.
 
-    movl %edi, %ebx         # Salva il puntatore alla stringa destinazione.
+    movl %edi, %ebx         # Salva l'indirizzo alla stringa destinazione.
 
     xorl %ecx, %ecx
 
     telemetry_line_loop:
-        /* Calcola il valore puntato da ths. */
-        movl 16(%ebp), %edx     # Carica il puntatore a ths.
-        push %ecx               # Salva il contatore per recuperarlo successivamente.
+        /* Calcola le soglie del valore. */
+        movl 16(%ebp), %edx     # Carica l'indirizzo di treshs.
+        push %ecx               # Salva il contatore nello stack.
         movl %ecx, %eax         # Prepara il contatore per la moltiplicazione.
-        movl $8, %ecx
+        movl $8, %ecx           # Carica lo sfasamento.
         mulb %cl                # Moltiplica il contatore per 8.
-        addl %eax, %edx         # Somma il risultato a ths.
+        addl %eax, %edx         # Somma il risultato a treshs.
 
         /* Chiama la funzione select. */
-        movl $2, %ecx
-        push %ecx               # Carica il valore 2.
-        push %edx               # Carica il puntatore a ths.
+        movl $2, %ecx           # Copia il numero di valori di treshs
+        push %ecx               # e lo carica nello stack.
+        push %edx               # Carica l'indirizzo di treshs.
         movl (%esi), %eax       # Estrae l'elemento dall'array.
-        push %eax               # Carica l'elemento estratto.
-        call asm_select         # Chiama la funzione asm_select.
+        push %eax               # e lo carica nello stack.
+        call asm_select         # Calcola il l'indice della stringa con il livello.
         addl $12, %esp          # Scarica i parametri dallo stack.
         addl $4, %esi           # Aggiorna l'indice dell'array.
 
-        /* Estrae la stringa da aggiungere a dst. */
-        movl $4, %ecx
+        /* Estrae la stringa che descrive il livello. */
+        movl $4, %ecx           # Carica il numero di bytes dell'architettura.
         xorl %edx, %edx
-        mull %ecx               # Moltiplica il selettore per 4.
-        addl 20(%ebp), %eax     # Somma al risultato il puntatore ad out.
-        movl (%eax), %edx       # Carica da memoria la stringa.
+        mull %ecx               # Moltiplica il selettore per il numero di bytes.
+        addl 20(%ebp), %eax     # Somma al risultato l'indirizzo della stringa.
+        movl (%eax), %edx       # Carica la stringa dalla memoria.
 
         /* Calcola la dimensione della stringa. */
-        push %edx               # Carica la stringa.
-        call asm_strlen         # Chiama la funzione ams_strlen.
+        push %edx               # Carica la stringa con il livello.
+        call asm_strlen         # Calcola la lunghezza della stringa.
         addl $4, %esp           # Scarica i parametri dallo stack.
 
         /* Copia la stringa nella destinazione. */
@@ -93,8 +95,8 @@ telemetry_line:
         incl %edi               # Incrementa il puntatore di dst.
 
         /* Calcola il numero di caratteri aggiunti. */
-        movl %edi, %eax
-        subl %ebx, %eax
+        movl %edi, %eax         # Copia l'indirizzo modificato.
+        subl %ebx, %eax         # Sottrae l'indirizzo di partenza.
 
     telemetry_line_epilogue:
         /* Ripristino registri. */
