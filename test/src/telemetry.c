@@ -1,5 +1,5 @@
 #include "library.h"
-#include "telemety.h"
+#include "telemetry.h"
 #include <stdio.h>
 
 static const char *names[] = {

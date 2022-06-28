@@ -93,15 +93,17 @@ telemetry:
     leal pilot_00_str, %esi
     movl %esi, -80(%ebp)
 
-    leal level_02_str, %esi
-    movl %esi, -84(%ebp)
+    /* Carica tutti i livelli nello stack. */
+    leal level_02_str, %esi     # Copia l'indirizzo della stringa in %esi.
+    movl %esi, -84(%ebp)        # e poi lo copia nello stack.
     leal level_01_str, %esi
     movl %esi, -88(%ebp)
     leal level_00_str, %esi
     movl %esi, -92(%ebp)
 
-    movl point_21_num, %esi
-    movl %esi, -96(%ebp)
+    /* Carica tutti i livelli nello stack. */
+    movl point_21_num, %esi     # Copia il valore della soglia in %esi.
+    movl %esi, -96(%ebp)        # e poi lo copia nello stack.
     movl point_20_num, %esi
     movl %esi, -100(%ebp)
     movl point_11_num, %esi
@@ -114,53 +116,53 @@ telemetry:
     movl %esi, -116(%ebp)
 
     /* Copia l'indirizzo della stringa sorgente. */
-    movl %ebp, %esi
-    addl $8, %esi
+    movl %ebp, %esi     # Copia l'indirizzo di base in %esi.
+    addl $8, %esi       # Calcola l'indirizzo della stringa sorgente.
 
     /* Ottiene la prima riga. */
-    push $10
-    push %esi
-    call asm_strsep
-    addl $8, %esp
+    push $10            # Carica il carattere '\n'.
+    push %esi           # Carica l'indirizzo della stringa.
+    call asm_strsep     # La separa.
+    addl $8, %esp       # Scarica i parametri dallo stack.
 
-    movl %ebp, %ebx
-    subl $80, %ebx
+    movl %ebp, %ebx     # Copia l'indirizzo di base in %ebx.
+    subl $80, %ebx      # Calcola l'indirizzo dell'array di piloti.
 
     /* Ricerca l'ID del pilota. */
-    push %eax
-    push $20
-    push %ebx
-    call asm_arrfind
-    addl $12, %esp
+    push %eax           # Carica il primo segmento della stringa.
+    push $20            # Carica la lunghezza dell'array.
+    push %ebx           # Carica l'array di piloti.
+    call asm_arrfind    # Cerca il pilota all'interno dell'array.
+    addl $12, %esp      # Scarica i parametri dallo stack.
 
     /* Se l'ID è maggiore o uguale a 0. */
-    cmpl $0, %eax
-    jl   telem_invalid
+    cmpl $0, %eax       # Se l'identificatore è minore di zero.
+    jl   telem_invalid  # allora esce dalla funzione.
 
-    movl %ebp, %ebx
-    subl $92, %ebx
-    movl %ebp, %ecx
-    subl $116, %ecx
+    movl %ebp, %ebx     # Copia l'indirizzo di base in %ebx.
+    subl $92, %ebx      # Calcola l'indirizzo dell'array di livelli.
+    movl %ebp, %ecx     # Copia l'indirizzo di base in %ecx.
+    subl $116, %ecx     # Calcola l'indirizzo dell'array di soglie.
 
     /* Chiama la funzione loop. */
-    push %ebx
-    push %ecx
-    push 12(%ebp)
-    push 8(%ebp)
-    push %eax
-    call telemetry_loop
-    addl $20, %esp
+    push %ebx           # Carica l'array di livelli.
+    push %ecx           # Carica l'array di soglie.
+    push 12(%ebp)       # Carica la stringa di destinazione.
+    push 8(%ebp)        # Carica la stringa sorgente.
+    push %eax           # Carica l'identificatore del pilota.
+    call telemetry_loop # Gestisce tutte le righe.
+    addl $20, %esp      # Scarica i parametri dallo stack.
 
     jmp  telem_return
 
     telem_invalid:
-        leal invalid_pilot_str, %esi
+        leal invalid_pilot_str, %esi    # Carica l'indirizzo.
 
-        push $9
-        push %esi
-        push 12(%ebp)
-        call asm_strlcpy
-        addl $12, %esp
+        push $9             # Carica il numero 9.
+        push %esi           # Carica la stringa da copiare.
+        push 12(%ebp)       # Carica la stringa di destinazione.
+        call asm_strlcpy    # Copia la stringa.
+        addl $12, %esp      # Scarica i parametri dallo stack.
 
     telem_return:
         xorl %eax, %eax
