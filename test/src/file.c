@@ -1,9 +1,9 @@
-#include <stdio.h>
-#include <malloc.h>
-#include <string.h>
 #include "file.h"
+#include <malloc.h>
+#include <stdio.h>
+#include <string.h>
 
-file_t*
+file_t *
 file_create(const char *name, const char *mode)
 {
     file_t *self = malloc(sizeof *self);
@@ -20,7 +20,7 @@ file_create(const char *name, const char *mode)
     return self;
 }
 
-FILE*
+FILE *
 file_open(file_t *self)
 {
     if (self != 0)
@@ -58,7 +58,7 @@ file_size(file_t *self)
     return size;
 }
 
-const char*
+const char *
 file_read(file_t *self)
 {
     uint32_t size = file_size(self);
@@ -71,8 +71,7 @@ file_read(file_t *self)
             self->body = malloc(size);
         }
 
-        fread(self->body, sizeof (char),
-            self->size, self->file);
+        fread(self->body, sizeof(char), self->size, self->file);
 
         return self->body;
     }
@@ -91,7 +90,6 @@ file_write(file_t *self, char *str)
             self->body = str;
         }
 
-        fwrite(self->body, sizeof (char),
-            strlen(self->body), self->file);
+        fwrite(self->body, sizeof(char), strlen(self->body), self->file);
     }
 }

@@ -6,3 +6,4 @@ obj/
 # Every hidden folder or file.
 .*
 !.gitignore
+!.clang-format

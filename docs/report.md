@@ -40,6 +40,8 @@ I livelli che possono assumere le varie informazioni sono riportati nella tabell
 | **Temperatura**   | $x \le 90$  | $90 < x \le 110$     | $x > 110$ |
 | **Velocità**      | $x \le 110$ | $100 < x \le 250$    | $x > 250$ |
 
+\pagebreak
+
 ## Variabili
 
 Per riuscire a realizzare il sistema abbiamo usufruito di quattro variabili:
@@ -67,6 +69,8 @@ Questi array non sono altro che targhette salvate staticamente nel codice che po
 
 Mentre per l'array delle soglie, essendo costituito da interi, non abbiamo utilizzato l'istruzione `leal` ma `movl`. Infine, la stringa `"Invalid"` viene usata anch'essa in `telemetry` nel caso in cui il pilota non sia stato riconosciuto.
 
+\pagebreak
+
 ## Funzioni
 
 ### Passaggio dei parametri
@@ -76,19 +80,29 @@ Prima di tutto, durante la chiamata di una funzione esistono due protagonisti, i
 Più precisamente, nello standard di chiamata C, il *chiamante* deve:
 
 1. Eventualmente salvare i registri `%eax`, `%edx` ed `%ecx`
+
 2. Caricare nello stack dall'ultimo al primo i vari parametri
+
 3. Chiamare la funzione stessa
+
 4. Recuperare il risultato dal registro `%eax` se necessario.
 
 Viceversa, il *chiamato* ha il compito di:
 
 1. Salvare il registro `%ebp` nello stack
+
 2. Allocare eventuale spazio nello stack per le variabili
+
 3. Salvare i registri `%ebx`, `%esi`, `%edi` se vengono utilizzati
+
 4. Eseguire tutte le operazioni utili a produrre il risultato
+
 5. Recuperare i registri se precedentemente salvati
+
 6. Liberare lo spazio se precedentemente allocato
+
 7. Recuperare il valore iniziale di `%ebp` dallo stack
+
 8. Ritornare al chiamante.
 
 ### Funzioni di supporto
@@ -99,7 +113,7 @@ Per riuscire a implementare il sistema nel modo più comprensibile e ordinato po
 
 > ```c
 > unsigned int
-> strlen(const char *str)
+> strlen(const char *str);
 > ```
 
 Calcola la lunghezza di una stringa escludendo il carattere terminatore.
@@ -108,7 +122,7 @@ Calcola la lunghezza di una stringa escludendo il carattere terminatore.
 
 > ```c
 > int
-> strncmp(const char *str1, const char *str2, unsigned int num)
+> strncmp(const char *str1, const char *str2, unsigned int num);
 > ```
 
 Confronta un certo numero di caratteri di due stringhe.
@@ -117,7 +131,7 @@ Confronta un certo numero di caratteri di due stringhe.
 
 > ```c
 > char *
-> strnrev(char *str, int num)
+> strnrev(char *str, unsigned int num);
 > ```
 
 Scambia un certo numero di caratteri di una stringa.
@@ -126,7 +140,7 @@ Scambia un certo numero di caratteri di una stringa.
 
 > ```c
 > int
-> strncpy(char *dst, const char *src, int num)
+> strncpy(char *dst, const char *src, unsigned int num);
 > ```
 
 Copia un certo numero di caratteri da una stringa in un'altra.
@@ -148,7 +162,7 @@ Indipendentemente dallo stato della stringa sorgente, quella di destinazione vie
 
 > ```c
 > unsigned int
-> strtoi(const char *str)
+> strtoi(const char *str);
 > ```
 
 Converte una stringa in un intero di base 10.
@@ -157,7 +171,7 @@ Converte una stringa in un intero di base 10.
 
 > ```c
 > char *
-> itostr(unsigned int num, char *str)
+> itostr(unsigned int num, char *str);
 > ```
 
 Converte un intero di base 10 in una stringa.
@@ -166,7 +180,7 @@ Converte un intero di base 10 in una stringa.
 
 > ```c
 > unsigned int
-> select(unsigned int val, unsigned int arr[], unsigned int len)
+> select(unsigned int val, unsigned int arr[], unsigned int len);
 > ```
 
 Verifica in quale intervallo si trova un determinato valore.
@@ -175,7 +189,7 @@ Verifica in quale intervallo si trova un determinato valore.
 
 > ```c
 > char*
-> strsep(char **ptr, char sep)
+> strsep(char **ptr, char sep);
 > ```
 
 Spezza una stringa sul posto in base ad un certo carattere separatore.
@@ -184,7 +198,7 @@ Spezza una stringa sul posto in base ad un certo carattere separatore.
 
 > ```c
 > unsigned int
-> strnsep(char *arr[], unsigned int num, char **ptr, char sep)
+> strnsep(char *arr[], unsigned int num, char **ptr, char sep);
 > ```
 
 Spezza una stringa sul posto in base ad un certo carattere separatore più volte.
@@ -193,156 +207,25 @@ Spezza una stringa sul posto in base ad un certo carattere separatore più volte
 
 > ```c
 > int
-> arrfind(const char *arr[], unsigned int len, const char *key)
+> arrfind(const char *arr[], unsigned int len, const char *key);
 > ```
 
 Cerca una particolare chiave all'interno di un array.
 
+\pagebreak
+
+## Diagramma di flusso
+
+![Diagramma](./img/diag.png)
+
+\pagebreak
+
 ## Scelte progettuali
 
-<!--
-### telemetry_line
+Durante la progettazione abbiamo preso le seguenti decisioni:
 
-```c
-int
-telemetry_line(int arr[], char *dst);
-```
+1. Abbiamo suddiviso il sistema il più possibile usando più funzioni seguendo il pricipio *"divide et impera"*
 
-La funzione accetta in ingresso i dati del pilota e una stringa destinazione. Assegna ai dati una tra le stringhe `"LOW"`, `"MEDIUM"` e `"HIGH"` e le salva nella destinazione.
+2. Tutto il codice è stato prima preparato nel linguaggio C, e poi usato come linea guida per scrivere la versione Assembly.
 
-Copia la stringa destinazione in un'altra variabile. In un ciclo di 3 iterazioni (la quantità di valori dell'array), salva la targhetta apposita, individuata attraverso la funzione `select()`. Ottiene quindi la lunghezza della stringa e per mezzo di `strncpy()` aggiunge il risultato alla destinazione. Poi, se non si è nell'ultima iterazione aggiunge alla destinazione una virgola, altrimenti aggiunge l'interruzione di riga. Restituisce quindi la differenza tra i puntatori alla destinazione e alla stringa copia.
-
-```c
-int
-telemetry_line(int arr[], char *dst)
-{
-    char *d = dst;
-    const char *out = 0;
-    int idx = 0, siz = 0;
-
-    for (int i = 0; i < 3; ++i) {
-        idx = c_select(arr[i], treshs + i * 2, 2);
-        out = levels[idx];
-        siz = c_strlen(out);
-        dst += c_strncpy(dst, out, siz);
-
-        if (i != 2)
-            *dst++ = ',';
-        else
-            *dst++ = '\n';
-    }
-
-    return dst - d;
-}
-```
-
-### telemetry_last
-
-```c
-void
-telemetry_last(int arr[], char *src, char *dst);
-```
-
-La funzione accetta in ingresso un'array d'interi, una stringa sorgente e una destinazione. Crea l'ultima riga dei dati del pilota.
-
-In un ciclo da 4 iterazioni (numero di elementi nell'array) converte ogni elemento in stringa con la funzione `itostr()`, salva la lunghezza della stringa ottenuta e poi la copia nella destinazione. Inoltre, se non è avvenuta l'ultima iterazione aggiunge una virgola, altrimenti aggiunge l'interruzione di riga.
-
-```c
-void
-telemetry_last(int arr[], char *src, char *dst)
-{
-    int siz = 0;
-
-    for (int i = 0; i < 4; ++i) {
-        c_itostr(arr[i], src);
-
-        siz = c_strlen(src);
-        dst += c_strncpy(dst, src, siz);
-
-        if (i != 3)
-            *dst++ = ',';
-        else
-            *dst++ = '\n';
-    }
-}
-```
-
-### telemetry_loop
-
-```c
-void
-telemetry_loop(int idx, char *src, char *dst);
-```
-
-La funzione accetta in ingresso l'indice del pilota, una stringa sorgente e una destinazione. Manipola i dati appartenenti al pilota e li salva nella destinazione.
-
-Finché non ha raggiunto la fine della sorgente, svolge le seguenti operazioni: copia le stringhe una riga alla volta, se la stringa non è vuota salva in un array di stringhe (`str[5]`) le sue parti separate da una virgola; se la seconda stringa di `str[]` non è vuota, la converte in intero; se il numero ottenuto è uguale all'indice del pilota da analizzare, salva in un array d'interi (`val[4]`) i valori `str[2] - str[4]`; ricopia il primo elemento di `val[]` nella destinazione, aggiunge una virgola e poi con la funzione `telemetry_line()` sostituisce gli altri elementi di `val[]` con apposite stringhe, in base alla posizione e al valore. Salva in un altro array d'interi (`tst[4]`) i valori massimi dei dati del pilota, poi incrementa un contatore.
-Concluso il ciclo, divide l'ultimo valore di `tst[]` per il contatore, ottenendo così una media, e infine utilizza l'array per la funzione `telemetry_last()`.
-
-```c
-void
-telemetry_loop(int idx, char *src, char *dst)
-{
-    char *s = src, *lin = 0, *str[5] = {0};
-    int cnt = 0, pid = 0, val[4] = {0}, tst[4] = {0};
-
-    for (cnt = 0; src != 0;) {
-        lin = c_strsep(&src, '\n');
-
-        if (lin != 0)
-            c_strnsep(str, 5, &lin, ',');
-
-        if (str[1] != 0) {
-            pid = c_strtoi(str[1]);
-
-            if (pid == idx) {
-                val[0] = c_strtoi(str[3]);
-                val[1] = c_strtoi(str[4]);
-                val[2] = c_strtoi(str[2]);
-
-                dst += c_strncpy(dst, str[0], 7);
-                *dst++ = ',';
-
-                dst += telemetry_line(val, dst, treshs, levels);
-
-                tst[0] = c_max(tst[0], val[0]);
-                tst[1] = c_max(tst[1], val[1]);
-                tst[2] = c_max(tst[2], val[2]);
-                tst[3] = c_sum(tst[3], val[2]);
-
-                cnt += 1;
-            }
-        }
-    }
-
-    tst[3] = tst[3] / cnt;
-    telemetry_last(tst, s, dst);
-}
-```
-
-### telemetry
-
-```c
-int
-telemetry(char *src, char *dst);
-```
-
-La funzione accetta in ingresso una stringa sorgente e una destinazione.
-
-Separa e salva la prima riga della sorgente e la cerca nell'array `names`, che contiene il nome dei possibili piloti. Se trova una corrispondenza, salva la sua posizione e procede con `telemetry_loop`, altrimenti salva la stringa `"Invalid"` nella destinazione.
-
-```c
-int
-telemetry(char *src, char *dst)
-{
-    char *lin = c_strsep(&src, '\n');
-    int idx = c_arrfind(names, 20, lin);
-
-    if (idx >= 0)
-        c_telemetry_loop(idx, src, dst);
-    else
-        c_strlcpy(dst, "Invalid", 8);
-
-    return 0;
-}
-``` -->
+3. Per essere sicuri che le funzioni Assembly fossero corrette le abbiamo provate tramite del codice C e dunque abbiamo seguito il suo standard di chiamata a funzione.

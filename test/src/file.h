@@ -35,7 +35,7 @@ struct file
  *
  * @return Un puntatore al nuovo stream.
  */
-file_t*
+file_t *
 file_create(const char *name, const char *mode);
 
 /**
@@ -50,7 +50,7 @@ file_create(const char *name, const char *mode);
  *
  * @return Un puntatore al file aperto.
  */
-FILE*
+FILE *
 file_open(file_t *self);
 
 /**
@@ -91,7 +91,7 @@ file_size(file_t *self);
  *
  * @return Contenuto del file.
  */
-const char*
+const char *
 file_read(file_t *self);
 
 /**

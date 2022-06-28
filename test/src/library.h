@@ -88,7 +88,7 @@ c_strtoi(const char *str);
  *
  * @return Un puntatore alla stringa di destinazione.
  */
-char*
+char *
 c_itostr(unsigned int num, char *str);
 
 /**
@@ -100,7 +100,7 @@ c_itostr(unsigned int num, char *str);
  *
  * @return Segmento iniziale della stringa.
  */
-char*
+char *
 c_strsep(char **ptr, char sep);
 
 /**
@@ -151,6 +151,6 @@ c_select(int val, int arr[], int len);
  *         della stringa nell'array.
  */
 int
-c_arrfind(const char *arr[], int len, const char *key)
+c_arrfind(const char *arr[], int len, const char *key);
 
 #endif /* LIB_H */
