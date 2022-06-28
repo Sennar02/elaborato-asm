@@ -40,8 +40,6 @@ I livelli che possono assumere le varie informazioni sono riportati nella tabell
 | **Temperatura**   | $x \le 90$  | $90 < x \le 110$     | $x > 110$ |
 | **Velocità**      | $x \le 110$ | $100 < x \le 250$    | $x > 250$ |
 
-\pagebreak
-
 ## Variabili
 
 Per riuscire a realizzare il sistema abbiamo usufruito di quattro variabili:
@@ -68,8 +66,6 @@ Questi array non sono altro che targhette salvate staticamente nel codice che po
 > ```
 
 Mentre per l'array delle soglie, essendo costituito da interi, non abbiamo utilizzato l'istruzione `leal` ma `movl`. Infine, la stringa `"Invalid"` viene usata anch'essa in `telemetry` nel caso in cui il pilota non sia stato riconosciuto.
-
-\pagebreak
 
 ## Funzioni
 
@@ -212,13 +208,11 @@ Spezza una stringa sul posto in base ad un certo carattere separatore più volte
 
 Cerca una particolare chiave all'interno di un array.
 
-\pagebreak
-
 ## Diagramma di flusso
 
-![Diagramma](./img/diag.png)
+![Diagramma](img/diag-1.svg "Diagramma di flusso"){ width=95% }
 
-\pagebreak
+![Diagramma](img/diag-2.svg "Diagramma di flusso"){ width=95% }
 
 ## Scelte progettuali
 
