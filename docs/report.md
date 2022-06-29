@@ -218,7 +218,7 @@ Cerca una particolare chiave all'interno di un array.
 
 Durante la progettazione abbiamo preso le seguenti decisioni:
 
-1. Abbiamo suddiviso il sistema il più possibile usando più funzioni seguendo il pricipio *"divide et impera"*
+1. Abbiamo suddiviso il sistema il più possibile usando più funzioni seguendo il pricipio *"divide et impera"*.
 
 2. Tutto il codice è stato prima preparato nel linguaggio C, e poi usato come linea guida per scrivere la versione Assembly.
 
