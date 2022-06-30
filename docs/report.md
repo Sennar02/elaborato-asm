@@ -223,3 +223,5 @@ Durante la progettazione abbiamo preso le seguenti decisioni:
 2. Tutto il codice è stato prima preparato nel linguaggio C, e poi usato come linea guida per scrivere la versione Assembly.
 
 3. Per essere sicuri che le funzioni Assembly fossero corrette le abbiamo provate tramite del codice C e dunque abbiamo seguito il suo standard di chiamata a funzione.
+
+4. Abbiamo automattizzato la compilazione tramite un `Makefile` contenente delle regole per la creazione dei file oggetto, dell'eseguibile e varie altre di supporto come quelle per rimuovere i file creati.
